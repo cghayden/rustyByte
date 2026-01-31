@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '../../../generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { dockerService } from '../../../lib/docker';
+import { verifyApiAuth } from '../../../lib/auth';
 
 const adapter = new PrismaPg({
   connectionString: process.env.DIRECT_DATABASE_URL,
@@ -12,12 +13,29 @@ const prisma = new PrismaClient({ adapter });
 
 export async function POST(request: NextRequest) {
   try {
+    // SECURITY: Verify user is authenticated
+    const authenticatedUser = await verifyApiAuth(request);
+    if (!authenticatedUser) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please log in to access terminal instances' },
+        { status: 401 }
+      );
+    }
+
     const { userId, challengeId } = await request.json();
 
     if (!userId || !challengeId) {
       return NextResponse.json(
         { error: 'userId and challengeId are required' },
         { status: 400 }
+      );
+    }
+
+    // SECURITY: Verify the userId matches the authenticated user
+    if (userId !== authenticatedUser.userId) {
+      return NextResponse.json(
+        { error: 'Forbidden - Cannot create instances for other users' },
+        { status: 403 }
       );
     }
 

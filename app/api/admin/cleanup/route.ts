@@ -1,26 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dockerService } from '../../../../lib/docker';
-import { getCurrentUser } from '../../../../lib/auth';
+import { verifyApiAdmin } from '../../../../lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    // Allow admin secret header or authenticated admin user
-    const adminSecret = process.env.ADMIN_SECRET || 'change-me';
+    // SECURITY: Verify admin authentication
+    const isAdmin = await verifyApiAdmin(request);
+    
+    // Also allow admin secret header for cron jobs
+    const adminSecret = process.env.ADMIN_SECRET;
     const headerSecret = request.headers.get('x-admin-secret');
+    const hasValidSecret = adminSecret && headerSecret === adminSecret;
 
-    let allowed = false;
-
-    if (headerSecret && headerSecret === adminSecret) {
-      allowed = true;
-    } else {
-      const user = await getCurrentUser();
-      if (user && 'role' in user && (user.role === 'ADMIN')) {
-        allowed = true;
-      }
-    }
-
-    if (!allowed) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!isAdmin && !hasValidSecret) {
+      return NextResponse.json(
+        { error: 'Forbidden - Admin access required' },
+        { status: 403 }
+      );
     }
 
     await dockerService.cleanupExpired();
