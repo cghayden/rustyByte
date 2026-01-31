@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  AUTHOR
+  PLAYER
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  username  String     @unique
+  role      Role       @default(PLAYER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  password  String
+  instances Instance[] // User's container instances
+
+  @@map("users")
+}
+
+model Category {
+  id         String      @id
+  name       String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  challenges Challenge[]
+
+  @@map("categories")
+}
+
+model Challenge {
+  id          String          @id @default(cuid())
+  slug        String
+  title       String
+  prompt      String
+  categoryId  String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  dockerImage String?
+  files       ChallengeFile[]
+  category    Category        @relation(fields: [categoryId], references: [id])
+  questions   Question[]
+  instances   Instance[]      // Container instances for this challenge
+
+  @@unique([categoryId, slug])
+  @@map("challenges")
+}
+
+model Question {
+  id                Int       @id @default(autoincrement())
+  questionId        String
+  challengeQuestion String
+  answers           String[]
+  challengeId       String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  challenge         Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@map("questions")
+}
+
+model ChallengeFile {
+  id          Int       @id @default(autoincrement())
+  name        String
+  filename    String
+  description String?
+  challengeId String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  filePath    String?
+  fileSize    Int?
+  mimeType    String?
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@map("challenge_files")
+}
+
+model Instance {
+  id            String   @id @default(cuid())
+  userId        String   // User who owns this instance
+  challengeId   String   // Challenge this instance is for
+  containerName String   @unique // Docker container name
+  hostPort      Int?     // Mapped port for ttyd
+  authToken     String?  // Authentication token for terminal access
+  status        String   // "creating" | "running" | "stopped" | "failed"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  expiresAt     DateTime? // Optional expiration time
+  
+  // Relations
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge     Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId]) // One instance per user per challenge
+  @@map("instances")
+}

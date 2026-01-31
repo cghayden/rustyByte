@@ -1,0 +1,84 @@
+# Test Terminal Challenge - Basic Linux Commands
+FROM alpine:latest
+
+# Install essential tools
+RUN apk add --no-cache \
+    ttyd \
+    bash \
+    curl \
+    vim \
+    nano \
+    python3 \
+    git \
+    tree \
+    file \
+    grep \
+    coreutils \
+    && rm -rf /var/cache/apk/*
+
+# Create a non-root user
+RUN adduser -D -s /bin/bash ctfuser
+
+# Switch to root to set up the challenge environment
+USER root
+WORKDIR /home/ctfuser
+
+# Create a challenge directory structure with hidden flag
+RUN mkdir -p /home/ctfuser/documents/personal \
+    && mkdir -p /home/ctfuser/documents/work \
+    && mkdir -p /home/ctfuser/downloads \
+    && mkdir -p /home/ctfuser/.config \
+    && mkdir -p /home/ctfuser/scripts
+
+# Add some decoy files
+RUN echo "This is just a readme file." > /home/ctfuser/README.txt \
+    && echo "Welcome to the terminal challenge!" > /home/ctfuser/welcome.txt \
+    && echo "Shopping list:\n- Milk\n- Eggs\n- Bread" > /home/ctfuser/documents/personal/shopping.txt \
+    && echo "Meeting notes from last week" > /home/ctfuser/documents/work/notes.txt \
+    && echo "TODO: Finish project" > /home/ctfuser/documents/work/todo.txt
+
+# Hide the flag in a less obvious location
+RUN echo "CTF{l1nux_c0mm4nd5_m4st3r}" > /home/ctfuser/.config/secret.txt \
+    && chmod 600 /home/ctfuser/.config/secret.txt
+
+# Add another flag in a different location for variety
+RUN mkdir -p /opt/challenge \
+    && echo "Hint: The main flag is hidden in a configuration directory" > /opt/challenge/hint.txt
+
+# Create a simple script
+RUN echo '#!/bin/bash\necho "This is a test script"' > /home/ctfuser/scripts/test.sh \
+    && chmod +x /home/ctfuser/scripts/test.sh
+
+# Set proper permissions
+RUN chown -R ctfuser:ctfuser /home/ctfuser
+
+# Add a custom MOTD (Message of the Day)
+RUN echo '#!/bin/bash' > /etc/profile.d/motd.sh \
+    && echo 'cat << "EOF"' >> /etc/profile.d/motd.sh \
+    && echo '═══════════════════════════════════════════════════════════' >> /etc/profile.d/motd.sh \
+    && echo '   LINUX TERMINAL CHALLENGE' >> /etc/profile.d/motd.sh \
+    && echo '═══════════════════════════════════════════════════════════' >> /etc/profile.d/motd.sh \
+    && echo '' >> /etc/profile.d/motd.sh \
+    && echo 'Welcome! Your mission is to find the hidden flag.' >> /etc/profile.d/motd.sh \
+    && echo '' >> /etc/profile.d/motd.sh \
+    && echo 'Try exploring with commands like:' >> /etc/profile.d/motd.sh \
+    && echo '  ls -la    (list all files including hidden ones)' >> /etc/profile.d/motd.sh \
+    && echo '  cd        (change directory)' >> /etc/profile.d/motd.sh \
+    && echo '  cat       (read file contents)' >> /etc/profile.d/motd.sh \
+    && echo '  find      (search for files)' >> /etc/profile.d/motd.sh \
+    && echo '  grep      (search within files)' >> /etc/profile.d/motd.sh \
+    && echo '' >> /etc/profile.d/motd.sh \
+    && echo 'Good luck!' >> /etc/profile.d/motd.sh \
+    && echo '═══════════════════════════════════════════════════════════' >> /etc/profile.d/motd.sh \
+    && echo 'EOF' >> /etc/profile.d/motd.sh \
+    && chmod +x /etc/profile.d/motd.sh
+
+# Switch to non-root user
+USER ctfuser
+WORKDIR /home/ctfuser
+
+# Expose ttyd port
+EXPOSE 7681
+
+# Start ttyd with bash (the CMD will be overridden by docker.ts with auth)
+CMD ["ttyd", "-p", "7681", "-W", "bash", "-l"]
