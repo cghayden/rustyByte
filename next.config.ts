@@ -2,6 +2,9 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ['@libsql/client', 'dockerode', 'ssh2'],
+  // Add empty turbopack config to silence the warning
+  // Most apps work fine with Turbopack without custom configuration
+  turbopack: {},
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // For client-side, ignore server-only packages completely
