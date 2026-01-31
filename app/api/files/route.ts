@@ -7,9 +7,19 @@ import {
   validateFile,
 } from '@/lib/s3';
 import prisma from '@/lib/db';
+import { verifyApiAdmin } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
+    // SECURITY: Only admins can upload files
+    const isAdmin = await verifyApiAdmin(request);
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: 'Forbidden - Admin access required' },
+        { status: 403 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const challengeId = formData.get('challengeId') as string;

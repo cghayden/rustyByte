@@ -166,3 +166,57 @@ export function validateEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
+
+/**
+ * Verify authentication for API routes
+ * Returns user data if authenticated, null if not
+ * Use this in API route handlers to protect endpoints
+ */
+export async function verifyApiAuth(request: Request): Promise<JWTPayload | null> {
+  try {
+    // Get token from cookie
+    const cookieHeader = request.headers.get('cookie');
+    if (!cookieHeader) {
+      return null;
+    }
+
+    // Parse cookies manually
+    const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
+      const [key, value] = cookie.trim().split('=');
+      acc[key] = value;
+      return acc;
+    }, {} as Record<string, string>);
+
+    const token = cookies['auth-token'];
+    if (!token) {
+      return null;
+    }
+
+    // Verify and return payload
+    return verifyToken(token);
+  } catch (error) {
+    console.error('API auth verification failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Verify admin role for API routes
+ * Returns true if user is admin, false otherwise
+ */
+export async function verifyApiAdmin(request: Request): Promise<boolean> {
+  const user = await verifyApiAuth(request);
+  if (!user) {
+    return false;
+  }
+
+  // Import db instance
+  const db = (await import('./db')).default;
+
+  const dbUser = await db.user.findUnique({
+    where: { id: user.userId },
+    select: { role: true },
+  });
+
+  return dbUser?.role === 'ADMIN';
+}

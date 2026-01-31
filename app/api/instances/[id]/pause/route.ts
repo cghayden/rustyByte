@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '../../../../../generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { dockerService } from '../../../../../lib/docker';
+import { verifyApiAuth } from '../../../../../lib/auth';
 
 const adapter = new PrismaPg({
   connectionString: process.env.DIRECT_DATABASE_URL,
@@ -15,6 +16,15 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // SECURITY: Verify user is authenticated
+    const authenticatedUser = await verifyApiAuth(request);
+    if (!authenticatedUser) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please log in' },
+        { status: 401 }
+      );
+    }
+
     const { id: instanceId } = await params;
 
     // Get instance from database
@@ -26,6 +36,14 @@ export async function POST(
       return NextResponse.json(
         { error: 'Instance not found' },
         { status: 404 }
+      );
+    }
+
+    // SECURITY: Verify user owns this instance
+    if (instance.userId !== authenticatedUser.userId) {
+      return NextResponse.json(
+        { error: 'Forbidden - Cannot pause other users\' instances' },
+        { status: 403 }
       );
     }
 
