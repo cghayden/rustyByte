@@ -2,8 +2,10 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 
-const JWT_SECRET =
-  process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is not defined');
+}
 const SALT_ROUNDS = 12;
 
 export interface JWTPayload {
