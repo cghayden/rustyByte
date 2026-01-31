@@ -103,7 +103,7 @@ export async function createChallenge(formData: FormData) {
     }
 
     // Create the challenge with all its questions
-    const challenge = await prisma.challenge.create({
+    const _challenge = await prisma.challenge.create({
       data: {
         categoryId,
         title: title.trim(),

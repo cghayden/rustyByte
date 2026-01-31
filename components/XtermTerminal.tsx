@@ -151,7 +151,7 @@ export default function XtermTerminal({
         websocket.current.onerror = () => {
           // Error handling done in onclose
         };
-      } catch (error) {
+      } catch (_error) {
         terminal.current?.write(
           '\r\n\x1b[31mFailed to connect to terminal\x1b[0m\r\n'
         );

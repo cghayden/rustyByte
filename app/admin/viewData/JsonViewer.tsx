@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 interface JsonViewerProps {
-  data: any;
+  data: unknown;
   name?: string;
   depth?: number;
 }
@@ -43,7 +43,6 @@ export default function JsonViewer({ data, name, depth = 0 }: JsonViewerProps) {
   }
 
   const isArray = Array.isArray(data);
-  const entries = isArray ? data : Object.entries(data);
   const isEmpty = isArray ? data.length === 0 : Object.keys(data).length === 0;
 
   if (isEmpty) {
@@ -75,7 +74,7 @@ export default function JsonViewer({ data, name, depth = 0 }: JsonViewerProps) {
       {isExpanded && (
         <div className="border-l-2 border-gray-200 ml-2">
           {isArray
-            ? data.map((item: any, index: number) => (
+            ? data.map((item: unknown, index: number) => (
                 <JsonViewer
                   key={index}
                   data={item}

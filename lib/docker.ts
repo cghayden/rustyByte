@@ -73,7 +73,7 @@ export class DockerService {
         await docker.getImage(dockerImage).inspect();
         imageExists = true;
         console.log(`Using local image: ${dockerImage}`);
-      } catch (inspectError) {
+      } catch (_inspectError) {
         console.log(`Image ${dockerImage} not found locally, will try to pull`);
       }
 
@@ -82,9 +82,9 @@ export class DockerService {
         console.log(`Pulling image: ${dockerImage}`);
         try {
           await new Promise((resolve, reject) => {
-            docker.pull(dockerImage, (err: any, stream: any) => {
+            docker.pull(dockerImage, (err: Error | null, stream: NodeJS.ReadableStream) => {
               if (err) return reject(err);
-              docker.modem.followProgress(stream, (err: any, output: any) => {
+              docker.modem.followProgress(stream, (err: Error | null, output: unknown) => {
                 if (err) return reject(err);
                 resolve(output);
               });

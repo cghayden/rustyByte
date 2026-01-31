@@ -1,6 +1,7 @@
 import { getChallenge, getCategoryById } from '@/lib/db';
-import { getCurrentUser, getCurrentUserWithRole } from '@/lib/auth';
+import { getCurrentUserWithRole } from '@/lib/auth';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import AnswerCard from '@/components/AnswerCard';
 import DownloadButton from '@/components/DownloadButton';
 import TerminalInstance from '@/components/TerminalInstance';
@@ -99,12 +100,12 @@ export default async function ChallengePage({
               This challenge requires a terminal session. Please log in to
               access the terminal.
             </p>
-            <a
+            <Link
               href='/login'
               className='inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700'
             >
               Log In
-            </a>
+            </Link>
           </div>
         </div>
       )}

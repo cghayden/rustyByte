@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       allowed = true;
     } else {
       const user = await getCurrentUser();
-      if (user && (user as any).isAdmin) {
+      if (user && 'role' in user && (user.role === 'ADMIN')) {
         allowed = true;
       }
     }
