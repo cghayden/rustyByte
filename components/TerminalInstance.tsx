@@ -254,7 +254,7 @@ export default function TerminalInstance({
               */}
               <div className='border border-gray-700 rounded overflow-hidden' style={{ height: '500px' }}>
                 <iframe
-                  src={`http://localhost:${instance.hostPort}`}
+                  src={`http://bristolctf.club/terminal/${instance.hostPort}`}
                   className='w-full h-full'
                   title='Terminal'
                   style={{ border: 'none' }}
