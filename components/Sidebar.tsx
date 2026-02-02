@@ -1,17 +1,30 @@
-import { getChallenges, getCategoryById } from '@/lib/db'
+import { getCategories } from '@/lib/db'
 import SidebarClient from './SidebarClient'
+import db from '@/lib/db'
 
 interface SidebarProps {
-  categoryId: string
+  categoryId?: string
 }
 
 export default async function Sidebar({ categoryId }: SidebarProps) {
-  const [category, challenges] = await Promise.all([
-    getCategoryById(categoryId),
-    getChallenges(categoryId),
-  ])
+  const categories = await getCategories()
+  
+  // Fetch all challenges
+  const challenges = await db.challenge.findMany({
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      categoryId: true,
+    },
+    orderBy: { title: 'asc' }
+  })
 
-  if (!category) return null
+  console.log('Sidebar - categories:', categories.length, 'challenges:', challenges.length, 'categoryId:', categoryId)
 
-  return <SidebarClient category={category} challenges={challenges} />
+  return <SidebarClient 
+    categories={categories} 
+    challenges={challenges}
+    initialCategoryId={categoryId}
+  />
 }

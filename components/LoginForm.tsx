@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function LoginForm() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,7 +20,7 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      await login(email, password);
+      await login(username, password);
       router.push('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
@@ -30,32 +30,33 @@ export default function LoginForm() {
   };
 
   return (
-    <div className='max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md'>
-      <h2 className='text-2xl font-bold mb-6 text-center text-gray-800'>
-        Login
-      </h2>
+    <div className='max-w-md w-full mx-auto px-4 mt-8'>
+      <div className='p-6 bg-tavern-light rounded-lg shadow-md border border-accent/20'>
+        <h2 className='text-2xl font-bold mb-6 text-center'>
+          Login
+        </h2>
 
-      {error && (
-        <div className='mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded'>
-          {error}
-        </div>
-      )}
+        {error && (
+          <div className='mb-4 p-3 bg-red-900/30 border border-red-400/50 text-red-300 rounded'>
+            {error}
+          </div>
+        )}
 
-      <form onSubmit={handleSubmit} className='space-y-4'>
+        <form onSubmit={handleSubmit} className='space-y-4'>
         <div>
           <label
-            htmlFor='email'
-            className='block text-sm font-medium text-gray-700 mb-1'
+            htmlFor='username'
+            className='block text-sm font-medium mb-1'
           >
-            Email
+            Username
           </label>
           <input
-            type='email'
-            id='email'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type='text'
+            id='username'
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
-            className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+            className='w-full px-3 py-2 border border-accent/30 bg-tavern-dark rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-accent'
             disabled={loading}
           />
         </div>
@@ -63,7 +64,7 @@ export default function LoginForm() {
         <div>
           <label
             htmlFor='password'
-            className='block text-sm font-medium text-gray-700 mb-1'
+            className='block text-sm font-medium mb-1'
           >
             Password
           </label>
@@ -73,7 +74,7 @@ export default function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+            className='w-full px-3 py-2 border border-accent/30 bg-tavern-dark rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-accent'
             disabled={loading}
           />
         </div>
@@ -81,18 +82,19 @@ export default function LoginForm() {
         <button
           type='submit'
           disabled={loading}
-          className='w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50'
+          className='w-full bg-accent text-black py-2 px-4 rounded-md hover:bg-accent-light focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-50 font-semibold'
         >
           {loading ? 'Signing in...' : 'Sign In'}
         </button>
       </form>
 
-      <p className='mt-4 text-center text-sm text-gray-600'>
+      <p className='mt-4 text-center text-sm'>
         Don&apos;t have an account?{' '}
-        <Link href='/register' className='text-blue-600 hover:text-blue-500'>
+        <Link href='/register' className='text-accent hover:text-accent-light underline'>
           Sign up
         </Link>
       </p>
+      </div>
     </div>
   );
 }
