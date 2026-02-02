@@ -1,47 +1,36 @@
 @import 'tailwindcss';
 @import '@xterm/xterm/css/xterm.css';
 
-/* Custom tavern colors for fallback */
-:root {
-  --tavern-primary: #191204;
-  --tavern-secondary: #dbac75;
-  --tavern-secondary-light: #251a06;
-  --bisque: #dbac75;
+/* 
+ * RUSTY BYTE DESIGN SYSTEM - COLOR VARIABLES
+ * Change these hex values to update the entire color scheme
+ */
+/* stylelint-disable-next-line at-rule-no-unknown */
+@theme {
+  --color-tavern-dark: #191204;
+  --color-tavern-medium: #251a06;
+  --color-tavern-light: #3a2a0a;
+  
+  --color-accent: #dbac75;
+  --color-accent-light: #e8c799;
+  --color-accent-dark: #c89a5f;
+  
+  --color-ui-bg: #191204;
+  --color-ui-card: #251a06;
+  --color-ui-border: #dbac75;
+  --color-ui-text: #dbac75;
+  --color-ui-text-muted: #c89a5f;
+  
+  --color-btn-primary: #dbac75;
+  --color-btn-primary-hover: #e8c799;
+  --color-btn-secondary: #3a2a0a;
+  --color-btn-secondary-hover: #4a3a1a;
 }
 
+/* Global body styles */
 body {
-  background-color: var(--tavern-primary);
-  color: var(--tavern-secondary);
-}
-
-/* Bisque background utilities */
-.bg-bisque {
-  background-color: var(--bisque);
-}
-
-.hover\:bg-bisque:hover {
-  background-color: var(--bisque);
-}
-
-.bg-bisque-80 {
-  background-color: color-mix(in srgb, var(--bisque) 80%, transparent);
-}
-
-.hover\:bg-bisque-80:hover {
-  background-color: color-mix(in srgb, var(--bisque) 80%, transparent);
-}
-
-.bg-bisque-60 {
-  background-color: color-mix(in srgb, var(--bisque) 60%, transparent);
-}
-
-.active\:bg-bisque-60:active {
-  background-color: color-mix(in srgb, var(--bisque) 60%, transparent);
-}
-
-/* Tavern background utilities */
-.bg-tavern-secondary-light {
-  background-color: var(--tavern-secondary-light);
+  background-color: #191204; /* tavern-dark */
+  color: #dbac75; /* accent */
 }
 
 /* Castle stone wall pattern */

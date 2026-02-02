@@ -31,32 +31,35 @@ export default function TopNavClient({ categories }: TopNavClientProps) {
         >
           The Rusty Byte
         </Link>
-        <div className='flex items-center gap-1'>
-          {categories.map((category) => {
-            const href = `/${category.id}`;
-            const active = isActive(href);
-            return (
-              <Link
-                key={category.id}
-                href={href}
-                className={
-                  `px-3 py-1.5 rounded-xl text-sm whitespace-nowrap transition-colors ` +
-                  (active
-                    ? 'bg-neutral-300 text-gray-900'
-                    : 'bg-tavern-primary text-neutral-300 hover:bg-neutral-300 hover:text-gray-900')
-                }
-              >
-                {category.name}
-              </Link>
-            );
-          })}
-        </div>
+        {/* Only show challenge category links to signed-in users */}
+        {user && (
+          <div className='flex items-center gap-1'>
+            {categories.map((category) => {
+              const href = `/${category.id}`;
+              const active = isActive(href);
+              return (
+                <Link
+                  key={category.id}
+                  href={href}
+                  className={
+                    `px-3 py-1.5 rounded-xl text-sm whitespace-nowrap transition-colors ` +
+                    (active
+                      ? 'bg-neutral-300 text-gray-900'
+                      : 'bg-tavern-dark text-neutral-300 hover:bg-neutral-300 hover:text-gray-900')
+                  }
+                >
+                  {category.name}
+                </Link>
+              );
+            })}
+          </div>
+        )}
         <div className='ml-auto flex items-center gap-2'>
           {/* Only show create button for ADMIN and AUTHOR roles */}
           {user && (user.role === 'ADMIN' || user.role === 'AUTHOR') && (
             <Link
               href='/create'
-              className='px-3 py-1.5 rounded-xl text-sm transition-colors bg-green-600 text-white hover:bg-green-700 flex items-center gap-1'
+              className='px-3 py-1.5 rounded-xl text-sm transition-colors bg-accent text-black hover:bg-accent-light flex items-center gap-1 font-medium'
               title='Create New Challenge'
             >
               <svg
@@ -83,16 +86,14 @@ export default function TopNavClient({ categories }: TopNavClientProps) {
                 <>
                   <Link
                     href='/dashboard'
-                    className='px-3 py-1.5 rounded-xl text-sm transition-colors bg-blue-600 text-white hover:bg-blue-700'
+                    className='px-4 py-2 rounded-xl text-sm transition-colors bg-tavern-light text-accent hover:bg-tavern-medium border border-accent/30 flex items-center gap-2'
                   >
-                    Dashboard
+                    <span>Dashboard</span>
+                    <span className='hidden sm:inline opacity-80'>({user.username})</span>
                   </Link>
-                  <span className='text-neutral-300 text-sm hidden sm:inline'>
-                    {user.username}
-                  </span>
                   <button
                     onClick={handleLogout}
-                    className='px-3 py-1.5 rounded-xl text-sm transition-colors bg-red-600 text-white hover:bg-red-700'
+                    className='px-3 py-1.5 rounded-xl text-sm transition-colors bg-tavern-light text-accent hover:bg-tavern-medium border border-accent/30'
                   >
                     Logout
                   </button>
@@ -107,7 +108,7 @@ export default function TopNavClient({ categories }: TopNavClientProps) {
                   </Link>
                   <Link
                     href='/register'
-                    className='px-3 py-1.5 rounded-xl text-sm transition-colors bg-blue-600 text-white hover:bg-blue-700'
+                    className='px-3 py-1.5 rounded-xl text-sm transition-colors bg-accent text-black hover:bg-accent-light font-medium'
                   >
                     Sign Up
                   </Link>

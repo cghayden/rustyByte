@@ -19,7 +19,7 @@ export default function SidebarClient({
   return (
     <aside
       id='sidebar'
-      className='w-full md:w-64 shrink-0 md:border-r border-stone-300 p-4 md:py-6 castle-wall h-full flex flex-col'
+      className='w-full md:w-48 shrink-0 md:border-r border-stone-300 p-4 md:py-6 castle-wall h-full flex flex-col'
     >
       <div className='flex-1 overflow-y-auto'>
         <h2 className='text-sm uppercase tracking-wide text-neutral-300 mb-2'>
