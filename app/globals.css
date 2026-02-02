@@ -5,6 +5,7 @@
  * RUSTY BYTE DESIGN SYSTEM - COLOR VARIABLES
  * Change these hex values to update the entire color scheme
  */
+ 
 /* stylelint-disable-next-line at-rule-no-unknown */
 @theme {
   --color-tavern-dark: #191204;

@@ -43,7 +43,7 @@ export default function MultipleQuestionsInput() {
       {questions.map((question, index) => (
         <div
           key={question.id}
-          className='border border-stone-800 rounded-lg p-4 bg-amber-100'
+          className='border border-stone-800 rounded-lg p-4 bg-amber-200'
         >
           <div className='flex items-center justify-between mb-3'>
             <h3 className='text-sm font-medium text-gray-700'>

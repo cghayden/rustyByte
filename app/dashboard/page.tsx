@@ -77,15 +77,7 @@ export default function DashboardPage() {
                 Quick Actions
               </h2>
               <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-                <Link
-                  href='/'
-                  className='block p-4 bg-tavern-dark rounded-lg hover:bg-accent/10 transition-colors border border-accent/30'
-                >
-                  <h3 className='font-medium text-accent'>Challenges</h3>
-                  <p className='text-sm opacity-80'>
-                    Browse available challenges
-                  </p>
-                </Link>
+            
                 <Link
                   href='/profile'
                   className='block p-4 bg-tavern-dark rounded-lg hover:bg-accent/10 transition-colors border border-accent/30'

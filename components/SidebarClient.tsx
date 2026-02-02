@@ -2,35 +2,74 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
-import type { Category, ChallengeWithDetails } from '@/lib/db'
+import { usePathname, useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import type { Category } from '@/lib/db'
 
 interface SidebarClientProps {
-  category: Category
-  challenges: ChallengeWithDetails[]
+  categories: Category[]
+  challenges: { id: string; slug: string; title: string; categoryId: string }[]
+  initialCategoryId?: string
 }
 
 export default function SidebarClient({
-  category,
+  categories,
   challenges,
+  initialCategoryId,
 }: SidebarClientProps) {
   const pathname = usePathname()
+  const router = useRouter()
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    initialCategoryId || categories[0]?.id || ''
+  )
+
+  // Update selected category when URL changes
+  useEffect(() => {
+    if (initialCategoryId) {
+      setSelectedCategoryId(initialCategoryId)
+    }
+  }, [initialCategoryId])
+
+  const filteredChallenges = challenges.filter(ch => ch.categoryId === selectedCategoryId)
+
+  console.log('SidebarClient - categories:', categories.length, 'selectedId:', selectedCategoryId, 'filtered:', filteredChallenges.length)
+
+  // Don't render sidebar if no categories
+  if (categories.length === 0) {
+    console.log('No categories - not rendering')
+    return null
+  }
+
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategoryId(categoryId)
+    router.push(`/${categoryId}`)
+  }
 
   return (
     <aside
       id='sidebar'
-      className='w-full md:w-48 shrink-0 md:border-r border-stone-300 p-4 md:py-6 castle-wall h-full flex flex-col'
+      className='hidden md:flex w-full md:w-48 shrink-0 md:border-r border-stone-300 p-4 md:py-6 castle-wall h-full flex-col'
     >
       <div className='flex-1 overflow-y-auto'>
-        <h2 className='text-sm uppercase tracking-wide text-neutral-300 mb-2'>
-          {category.name}
-        </h2>
+        {/* Category dropdown */}
+        <select
+          value={selectedCategoryId}
+          onChange={(e) => handleCategoryChange(e.target.value)}
+          className='w-full mb-4 px-3 py-2 rounded-xl text-sm bg-tavern-light text-accent border border-accent/30 hover:bg-tavern-medium focus:outline-none focus:ring-2 focus:ring-accent/50 transition-colors cursor-pointer'
+        >
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
+
         <ul className='space-y-1'>
-          {challenges.length === 0 && (
+          {filteredChallenges.length === 0 && (
             <li className='text-neutral-300 text-sm'>No challenges yet.</li>
           )}
-          {challenges.map((ch) => {
-            const href = `/${category.id}/${ch.slug}`
+          {filteredChallenges.map((ch) => {
+            const href = `/${selectedCategoryId}/${ch.slug}`
             const active = pathname === href
             return (
               <li key={ch.slug}>
