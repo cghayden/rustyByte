@@ -2,14 +2,15 @@
 
 import prisma from '@/lib/db'
 
-function normalize(s: string) {
-  return (s ?? '')
-    .toString()
-    .trim()
-    .toLowerCase()
-    .replace(/[\s\u00A0]+/g, ' ')
-    .replace(/\s*-\s*/g, '-')
-}
+
+// function normalize(s: string) {
+//   return (s ?? '')
+//     .toString()
+//     .trim()
+//     .toLowerCase()
+//     .replace(/[\s\u00A0]+/g, ' ')
+//     .replace(/\s*-\s*/g, '-')
+// }
 
 export async function checkAnswer(
   categoryId: string,
@@ -39,11 +40,10 @@ export async function checkAnswer(
   }
 
   const question = challenge.questions[0]
-  const normalizedUserAnswer = normalize(userAnswer)
 
-  // Check if the user's answer matches any of the acceptable answers
+  // Check if the user's answer matches any of the acceptable answers (exact match, case sensitive)
   const correct = question.answers.some(
-    (answer) => normalize(answer) === normalizedUserAnswer
+    (answer) => answer === userAnswer
   )
 
   return { correct }

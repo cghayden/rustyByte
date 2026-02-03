@@ -104,6 +104,7 @@ export const ChallengeScalarFieldEnum = {
   title: 'title',
   prompt: 'prompt',
   categoryId: 'categoryId',
+  authorId: 'authorId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   dockerImage: 'dockerImage'

@@ -3,7 +3,7 @@
 import prisma from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { canCreateChallenges } from '@/lib/auth';
+import { canCreateChallenges, getCurrentUser } from '@/lib/auth';
 
 export async function updateChallenge(formData: FormData) {
   // AUTHORIZATION: Only ADMIN and AUTHOR roles can edit challenges
@@ -92,5 +92,55 @@ export async function updateChallenge(formData: FormData) {
     redirect(`/${challenge.categoryId}/${challenge.slug}`);
   } else {
     redirect('/');
+  }
+}
+
+export async function deleteChallenge(challengeId: string): Promise<{ success: boolean; error?: string }> {
+  // AUTHORIZATION: Only ADMIN and AUTHOR roles can delete challenges
+  const hasPermission = await canCreateChallenges();
+  if (!hasPermission) {
+    return { success: false, error: 'Unauthorized: You do not have permission to delete challenges' };
+  }
+
+  const user = await getCurrentUser();
+  if (!user) {
+    return { success: false, error: 'Not authenticated' };
+  }
+
+  try {
+    // Get the challenge to check ownership
+    const challenge = await prisma.challenge.findUnique({
+      where: { id: challengeId },
+      select: { id: true, categoryId: true, authorId: true },
+    });
+
+    if (!challenge) {
+      return { success: false, error: 'Challenge not found' };
+    }
+
+    // Check if user is the author or an admin
+    const isAuthor = challenge.authorId === user.userId;
+    const userRecord = await prisma.user.findUnique({
+      where: { id: user.userId },
+      select: { role: true },
+    });
+    const isAdmin = userRecord?.role === 'ADMIN';
+
+    if (!isAuthor && !isAdmin) {
+      return { success: false, error: 'Only the challenge author or an admin can delete this challenge' };
+    }
+
+    // Delete the challenge (cascade will handle questions and files)
+    await prisma.challenge.delete({
+      where: { id: challengeId },
+    });
+
+    // Revalidate the category page
+    revalidatePath(`/${challenge.categoryId}`);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting challenge:', error);
+    return { success: false, error: 'Failed to delete challenge' };
   }
 }

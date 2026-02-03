@@ -7,6 +7,7 @@ interface Question {
   questionId: string;
   text: string;
   answers: string[];
+  answersRaw?: string; // Track raw input for editing
 }
 
 interface MultipleQuestionsInputProps {
@@ -21,14 +22,15 @@ export default function MultipleQuestionsInput({ initialQuestions }: MultipleQue
           questionId: q.questionId,
           text: q.text,
           answers: q.answers,
+          answersRaw: q.answers.join(', '),
         }))
-      : [{ id: 'new-0', questionId: '1', text: '', answers: [] }]
+      : [{ id: 'new-0', questionId: '1', text: '', answers: [], answersRaw: '' }]
   );
 
   const addQuestion = () => {
     const newId = `new-${Date.now()}`;
     const newQuestionId = String(questions.length + 1);
-    setQuestions([...questions, { id: newId, questionId: newQuestionId, text: '', answers: [] }]);
+    setQuestions([...questions, { id: newId, questionId: newQuestionId, text: '', answers: [], answersRaw: '' }]);
   };
 
   const removeQuestion = (id: string) => {
@@ -37,9 +39,17 @@ export default function MultipleQuestionsInput({ initialQuestions }: MultipleQue
     }
   };
 
-  const updateQuestion = (id: string, field: 'text' | 'answers', value: string | string[]) => {
+  const updateQuestion = (id: string, field: 'text' | 'answersRaw', value: string) => {
     setQuestions(
-      questions.map((q) => (q.id === id ? { ...q, [field]: value } : q))
+      questions.map((q) => {
+        if (q.id !== id) return q;
+        if (field === 'answersRaw') {
+          // Store raw value and also compute answers array for submission
+          const answers = value.split(',').map(a => a.trim()).filter(a => a.length > 0);
+          return { ...q, answersRaw: value, answers };
+        }
+        return { ...q, [field]: value };
+      })
     );
   };
 
@@ -52,7 +62,7 @@ export default function MultipleQuestionsInput({ initialQuestions }: MultipleQue
       {questions.map((question, index) => (
         <div
           key={question.id}
-          className='border border-stone-800 rounded-lg p-4 bg-amber-200'
+          className='border border-stone-800 rounded-lg p-2 bg-amber-200'
         >
           <div className='flex items-center justify-between mb-3'>
             <h3 className='text-sm font-medium text-gray-700'>
@@ -87,7 +97,7 @@ export default function MultipleQuestionsInput({ initialQuestions }: MultipleQue
               }
               required
               placeholder={`Enter question ${index + 1}...`}
-              className='w-full px-3 py-2 border border-stone-800 bg-amber-50 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-stone-900 text-stone-800'
+              className='text-sm w-full px-3 py-1 border border-stone-800 bg-amber-50 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-stone-900 text-stone-800'
             />
           </div>
 
@@ -103,13 +113,13 @@ export default function MultipleQuestionsInput({ initialQuestions }: MultipleQue
               type='text'
               id={`answers-${question.id}`}
               name={`questions[${index}][answers]`}
-              value={Array.isArray(question.answers) ? question.answers.join(', ') : question.answers}
+              value={question.answersRaw ?? ''}
               onChange={(e) =>
-                updateQuestion(question.id, 'answers', e.target.value.split(',').map(a => a.trim()))
+                updateQuestion(question.id, 'answersRaw', e.target.value)
               }
               required
               placeholder='answer1, answer2, ANSWER1...'
-              className='w-full px-3 py-2 border border-stone-800 bg-amber-50 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-stone-900 text-stone-800'
+              className='text-sm w-full px-3 py-1 border border-stone-800 bg-amber-50 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-stone-900 text-stone-800'
             />
             <p className='mt-1 text-xs text-gray-500'>
               Separate multiple acceptable answers with commas. Case variations

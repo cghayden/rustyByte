@@ -24,6 +24,7 @@ export default function FileUploadComponent({
 }: FileUploadProps) {
   const [files, setFiles] = useState<UploadedFile[]>(existingFiles);
   const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState<number | null>(null);
   const [dragActive, setDragActive] = useState(false);
 
   const updateFiles = useCallback(
@@ -119,6 +120,7 @@ export default function FileUploadComponent({
         return;
       }
 
+      setDeleting(index);
       try {
         const response = await fetch(`/api/files?fileId=${fileToRemove.id}`, {
           method: 'DELETE',
@@ -128,6 +130,7 @@ export default function FileUploadComponent({
 
         if (!response.ok) {
           alert(result.error || 'Failed to delete file');
+          setDeleting(null);
           return;
         }
         
@@ -135,8 +138,10 @@ export default function FileUploadComponent({
       } catch (error) {
         console.error('Delete error:', error);
         alert('Failed to delete file');
+        setDeleting(null);
         return;
       }
+      setDeleting(null);
     }
 
     // Update local state after successful deletion
@@ -154,18 +159,11 @@ export default function FileUploadComponent({
 
   return (
     <div className='space-y-4'>
-      <div className='flex items-center justify-between'>
-        <label className='block text-sm font-medium text-gray-700'>
-          Challenge Files
-        </label>
-        <span className='text-xs text-gray-500'>
-          Max 50MB • ZIP, images, executables, PCAP files
-        </span>
-      </div>
+     
 
       {/* Upload Area */}
       <div
-        className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+        className={`relative border-2 border-dashed rounded-lg pb-1 text-center transition-colors ${
           dragActive
             ? 'border-blue-500 bg-blue-50'
             : 'border-gray-300 hover:border-gray-400'
@@ -176,9 +174,8 @@ export default function FileUploadComponent({
         onDrop={handleDrop}
       >
         <div className='space-y-2'>
-          <div className='mx-auto w-12 h-12 text-gray-400'>📁</div>
           <div>
-            <p className='text-sm text-gray-600'>
+            <p className='text-sm text-gray-600 pt-2'>
               {uploading
                 ? 'Uploading...'
                 : 'Drop files here or click to browse'}
@@ -200,11 +197,11 @@ export default function FileUploadComponent({
       {/* File List */}
       {files.length > 0 && (
         <div className='space-y-2'>
-          <h4 className='text-sm font-medium text-gray-700'>Uploaded Files:</h4>
+          <h4 className='text-sm font-medium text-gray-700'>Current Files:</h4>
           {files.map((file, index) => (
             <div
               key={index}
-              className='flex items-center justify-between p-3 bg-gray-50 rounded-lg border'
+              className='flex items-center justify-between p-1 bg-gray-50 rounded-lg border'
             >
               <div className='flex-1 min-w-0'>
                 <p className='text-sm font-medium text-gray-900 truncate'>
@@ -217,9 +214,10 @@ export default function FileUploadComponent({
               <button
                 type='button'
                 onClick={() => removeFile(index)}
-                className='ml-3 text-xs text-red-600 hover:text-red-800 focus:outline-none'
+                disabled={deleting === index || uploading}
+                className='ml-3 text-xs text-red-600 hover:text-red-800 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed'
               >
-                Remove
+                {deleting === index ? 'Removing...' : 'Remove'}
               </button>
             </div>
           ))}
