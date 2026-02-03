@@ -5,11 +5,9 @@ export default function RegisterPage() {
     <div className='min-h-screen flex flex-col pt-16 sm:px-6 lg:px-8'>
       <div className='sm:mx-auto sm:w-full sm:max-w-md'>
         <h1 className='text-center text-3xl font-extrabold'>
-          The Rusty Byte Tavern
+          The Rusty Byte
         </h1>
-        <p className='mt-2 text-center text-sm'>
-          Create an account to get started
-        </p>
+        
       </div>
 
       <div className='mt-8 sm:mx-auto sm:w-full sm:max-w-md'>
