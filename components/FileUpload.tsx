@@ -24,6 +24,7 @@ export default function FileUploadComponent({
 }: FileUploadProps) {
   const [files, setFiles] = useState<UploadedFile[]>(existingFiles);
   const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState<number | null>(null);
   const [dragActive, setDragActive] = useState(false);
 
   const updateFiles = useCallback(
@@ -119,6 +120,7 @@ export default function FileUploadComponent({
         return;
       }
 
+      setDeleting(index);
       try {
         const response = await fetch(`/api/files?fileId=${fileToRemove.id}`, {
           method: 'DELETE',
@@ -128,6 +130,7 @@ export default function FileUploadComponent({
 
         if (!response.ok) {
           alert(result.error || 'Failed to delete file');
+          setDeleting(null);
           return;
         }
         
@@ -135,8 +138,10 @@ export default function FileUploadComponent({
       } catch (error) {
         console.error('Delete error:', error);
         alert('Failed to delete file');
+        setDeleting(null);
         return;
       }
+      setDeleting(null);
     }
 
     // Update local state after successful deletion
@@ -209,9 +214,10 @@ export default function FileUploadComponent({
               <button
                 type='button'
                 onClick={() => removeFile(index)}
-                className='ml-3 text-xs text-red-600 hover:text-red-800 focus:outline-none'
+                disabled={deleting === index || uploading}
+                className='ml-3 text-xs text-red-600 hover:text-red-800 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed'
               >
-                Remove
+                {deleting === index ? 'Removing...' : 'Remove'}
               </button>
             </div>
           ))}
