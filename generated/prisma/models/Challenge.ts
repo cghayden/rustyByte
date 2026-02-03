@@ -457,10 +457,6 @@ export type ChallengeUncheckedUpdateManyWithoutCategoryNestedInput = {
   deleteMany?: Prisma.ChallengeScalarWhereInput | Prisma.ChallengeScalarWhereInput[]
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type ChallengeCreateNestedOneWithoutQuestionsInput = {
   create?: Prisma.XOR<Prisma.ChallengeCreateWithoutQuestionsInput, Prisma.ChallengeUncheckedCreateWithoutQuestionsInput>
   connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutQuestionsInput

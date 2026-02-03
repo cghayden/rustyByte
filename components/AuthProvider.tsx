@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface User {
   id: string;
-  email: string;
+  email?: string | null;
   username: string;
   role: string;
 }
@@ -14,11 +14,11 @@ interface AuthContextType {
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
   register: (
-    email: string,
     username: string,
     password: string
   ) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -64,7 +64,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const register = async (
-    email: string,
     username: string,
     password: string
   ) => {
@@ -73,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, username, password }),
+      body: JSON.stringify({ username, password }),
     });
 
     const data = await response.json();
@@ -97,8 +96,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const response = await fetch('/api/auth/me');
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+      }
+    } catch (error) {
+      console.error('Refresh user failed:', error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

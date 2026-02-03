@@ -60,9 +60,9 @@ export default function DashboardPage() {
                 User Information
               </h2>
               <div className='space-y-2'>
-                <p>
+                {/* <p>
                   <span className='font-medium'>Email:</span> {user.email}
-                </p>
+                </p> */}
                 <p>
                   <span className='font-medium'>Username:</span> {user.username}
                 </p>
@@ -73,9 +73,7 @@ export default function DashboardPage() {
             </div>
 
             <div className='mt-6 bg-tavern-medium shadow rounded-lg p-6 border border-accent/20'>
-              <h2 className='text-xl font-semibold mb-4'>
-                Quick Actions
-              </h2>
+             
               <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
             
                 <Link

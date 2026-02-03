@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function RegisterForm() {
-  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -28,7 +27,7 @@ export default function RegisterForm() {
     setLoading(true);
 
     try {
-      await register(email, username, password);
+      await register(username, password);
       router.push('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
@@ -51,24 +50,6 @@ export default function RegisterForm() {
         )}
 
       <form onSubmit={handleSubmit} className='space-y-4'>
-        <div>
-          <label
-            htmlFor='email'
-            className='block text-sm font-medium mb-1'
-          >
-            Email
-          </label>
-          <input
-            type='email'
-            id='email'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className='w-full px-3 py-2 border border-accent/30 bg-tavern-dark rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-accent'
-            disabled={loading}
-          />
-        </div>
-
         <div>
           <label
             htmlFor='username'
@@ -104,7 +85,6 @@ export default function RegisterForm() {
             disabled={loading}
           />
           <p className='mt-1 text-xs opacity-70'>
-            Any password is accepted (testing mode)
           </p>
         </div>
 

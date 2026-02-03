@@ -2,12 +2,26 @@
 
 import { useAuth } from '@/components/AuthProvider';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 export default function ProfilePage() {
-  const { user, loading } = useAuth();
+  const { user, loading, refreshUser } = useAuth();
   const router = useRouter();
+  const [isEditing, setIsEditing] = useState(false);
+  const [newUsername, setNewUsername] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  // Password change state
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -15,12 +29,121 @@ export default function ProfilePage() {
     }
   }, [user, loading, router]);
 
+  useEffect(() => {
+    if (user) {
+      setNewUsername(user.username);
+    }
+  }, [user]);
+
+  const handleSaveUsername = async () => {
+    if (!newUsername.trim()) {
+      setError('Username cannot be empty');
+      return;
+    }
+
+    if (newUsername === user?.username) {
+      setIsEditing(false);
+      return;
+    }
+
+    setSaving(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await fetch('/api/auth/update-profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: newUsername }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to update username');
+        return;
+      }
+
+      setSuccess('Username updated successfully! Please log out and back in to see the change everywhere.');
+      setIsEditing(false);
+      
+      // Refresh user data if the function exists
+      if (refreshUser) {
+        await refreshUser();
+      }
+    } catch {
+      setError('Network error occurred');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setNewUsername(user?.username || '');
+    setIsEditing(false);
+    setError('');
+  };
+
+  const handleChangePassword = async () => {
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setPasswordError('All password fields are required');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('New passwords do not match');
+      return;
+    }
+
+    setSavingPassword(true);
+
+    try {
+      const response = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data.details) {
+          setPasswordError(data.details.join(', '));
+        } else {
+          setPasswordError(data.error || 'Failed to change password');
+        }
+        return;
+      }
+
+      setPasswordSuccess('Password changed successfully!');
+      setIsChangingPassword(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch {
+      setPasswordError('Network error occurred');
+    } finally {
+      setSavingPassword(false);
+    }
+  };
+
+  const handleCancelPassword = () => {
+    setIsChangingPassword(false);
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setPasswordError('');
+  };
+
   if (loading) {
     return (
-      <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
+      <div className='min-h-screen flex items-center justify-center'>
         <div className='text-center'>
-          <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900'></div>
-          <p className='mt-4 text-gray-600'>Loading...</p>
+          <div className='animate-spin rounded-full h-32 w-32 border-b-2 border-accent'></div>
+          <p className='mt-4 text-gray-400'>Loading...</p>
         </div>
       </div>
     );
@@ -31,80 +154,180 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className='min-h-screen bg-gray-50'>
+    <div className='min-h-screen'>
       <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='py-6'>
           <div className='flex items-center justify-between mb-8'>
-            <h1 className='text-3xl font-bold text-gray-900'>Profile</h1>
+            <h1 className='text-3xl font-bold'>Profile</h1>
             <Link
               href='/dashboard'
-              className='bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className='bg-accent text-black px-4 py-2 rounded-md hover:bg-accent-light focus:outline-none focus:ring-2 focus:ring-accent'
             >
               Back to Dashboard
             </Link>
           </div>
 
-          <div className='bg-white shadow rounded-lg'>
+          {error && (
+            <div className='mb-4 p-3 bg-red-900/30 border border-red-400/50 text-red-300 rounded'>
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className='mb-4 p-3 bg-green-900/30 border border-green-400/50 text-green-300 rounded'>
+              {success}
+            </div>
+          )}
+
+          <div className='bg-tavern-medium shadow rounded-lg border border-accent/20'>
             <div className='px-4 py-5 sm:p-6'>
-              <h2 className='text-lg font-medium text-gray-900 mb-4'>
+              <h2 className='text-lg font-medium mb-4'>
                 Profile Information
               </h2>
 
               <div className='grid grid-cols-1 gap-6 sm:grid-cols-2'>
                 <div>
-                  <label className='block text-sm font-medium text-gray-700'>
-                    Email Address
-                  </label>
-                  <div className='mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md border'>
-                    {user.email}
-                  </div>
-                </div>
-
-                <div>
-                  <label className='block text-sm font-medium text-gray-700'>
+                  <label className='block text-sm font-medium text-gray-300'>
                     Username
                   </label>
-                  <div className='mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md border'>
-                    {user.username}
-                  </div>
+                  {isEditing ? (
+                    <div className='mt-1'>
+                      <input
+                        type='text'
+                        value={newUsername}
+                        onChange={(e) => setNewUsername(e.target.value)}
+                        className='w-full px-3 py-2 border border-accent/30 bg-tavern-dark rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-accent'
+                        disabled={saving}
+                      />
+                      <p className='mt-1 text-xs text-gray-400'>
+                        Letters, numbers, underscores, and hyphens only. 3-30 characters.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className='mt-1 text-sm bg-tavern-dark px-3 py-2 rounded-md border border-accent/30'>
+                      {user.username}
+                    </div>
+                  )}
                 </div>
 
-                <div>
-                  <label className='block text-sm font-medium text-gray-700'>
-                    User ID
-                  </label>
-                  <div className='mt-1 text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-md border font-mono'>
-                    {user.id}
-                  </div>
-                </div>
               </div>
             </div>
           </div>
 
-          <div className='mt-6 bg-white shadow rounded-lg'>
+          <div className='mt-6 bg-tavern-medium shadow rounded-lg border border-accent/20'>
             <div className='px-4 py-5 sm:p-6'>
-              <h2 className='text-lg font-medium text-gray-900 mb-4'>
+              <h2 className='text-lg font-medium mb-4'>
                 Account Settings
               </h2>
-              <p className='text-sm text-gray-600 mb-4'>
-                Profile editing and password changes will be available in a
-                future update.
-              </p>
 
-              <div className='flex space-x-3'>
-                <button
-                  disabled
-                  className='bg-gray-300 text-gray-500 px-4 py-2 rounded-md cursor-not-allowed'
-                >
-                  Edit Profile (Coming Soon)
-                </button>
-                <button
-                  disabled
-                  className='bg-gray-300 text-gray-500 px-4 py-2 rounded-md cursor-not-allowed'
-                >
-                  Change Password (Coming Soon)
-                </button>
+              <div className='flex flex-wrap gap-3'>
+                {isEditing ? (
+                  <>
+                    <button
+                      onClick={handleSaveUsername}
+                      disabled={saving}
+                      className='bg-accent text-black px-4 py-2 rounded-md hover:bg-accent-light focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-50'
+                    >
+                      {saving ? 'Saving...' : 'Save Username'}
+                    </button>
+                    <button
+                      onClick={handleCancel}
+                      disabled={saving}
+                      className='bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50'
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className='bg-accent text-black px-4 py-2 rounded-md hover:bg-accent-light focus:outline-none focus:ring-2 focus:ring-accent'
+                  >
+                    Change Username
+                  </button>
+                )}
+                {!isChangingPassword && (
+                  <button
+                    onClick={() => setIsChangingPassword(true)}
+                    className='bg-accent text-black px-4 py-2 rounded-md hover:bg-accent-light focus:outline-none focus:ring-2 focus:ring-accent'
+                  >
+                    Change Password
+                  </button>
+                )}
               </div>
+
+              {isChangingPassword && (
+                <div className='mt-6 pt-6 border-t border-accent/20'>
+                  <h3 className='text-md font-medium mb-4'>Change Password</h3>
+                  
+                  {passwordError && (
+                    <div className='mb-4 p-3 bg-red-900/30 border border-red-400/50 text-red-300 rounded text-sm'>
+                      {passwordError}
+                    </div>
+                  )}
+
+                  {passwordSuccess && (
+                    <div className='mb-4 p-3 bg-green-900/30 border border-green-400/50 text-green-300 rounded text-sm'>
+                      {passwordSuccess}
+                    </div>
+                  )}
+
+                  <div className='space-y-4 max-w-md'>
+                    <div>
+                      <label className='block text-sm font-medium text-gray-300 mb-1'>
+                        Current Password
+                      </label>
+                      <input
+                        type='password'
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        className='w-full px-3 py-2 border border-accent/30 bg-tavern-dark rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-accent'
+                        disabled={savingPassword}
+                      />
+                    </div>
+                    <div>
+                      <label className='block text-sm font-medium text-gray-300 mb-1'>
+                        New Password
+                      </label>
+                      <input
+                        type='password'
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className='w-full px-3 py-2 border border-accent/30 bg-tavern-dark rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-accent'
+                        disabled={savingPassword}
+                      />
+                    </div>
+                    <div>
+                      <label className='block text-sm font-medium text-gray-300 mb-1'>
+                        Confirm New Password
+                      </label>
+                      <input
+                        type='password'
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className='w-full px-3 py-2 border border-accent/30 bg-tavern-dark rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-accent'
+                        disabled={savingPassword}
+                      />
+                    </div>
+                    <div className='flex gap-3 pt-2'>
+                      <button
+                        onClick={handleChangePassword}
+                        disabled={savingPassword}
+                        className='bg-accent text-black px-4 py-2 rounded-md hover:bg-accent-light focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-50'
+                      >
+                        {savingPassword ? 'Saving...' : 'Update Password'}
+                      </button>
+                      <button
+                        onClick={handleCancelPassword}
+                        disabled={savingPassword}
+                        className='bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50'
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

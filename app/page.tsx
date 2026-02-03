@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { getCategories } from '@/lib/db';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -12,8 +11,6 @@ export default async function HomePage() {
   if (authToken) {
     redirect('/dashboard');
   }
-
-  const categories = await getCategories();
 
   return (
     <div className='flex min-h-screen p-6 justify-center'>
@@ -35,25 +32,26 @@ export default async function HomePage() {
             hijinks!
           </p>
           <p className='text-center'>
-            Choose your quest from the categories below, brave adventurer.
+            Login or register to begin your quest, brave adventurer.
           </p>
           <p className='text-center'>
             May your flags be captured and your exploits legendary!
           </p>
 
-          {/* Category Cards */}
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full mt-8'>
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                href={`/${category.id}`}
-                className='p-6 rounded-xl bg-tavern-light border border-accent/30 hover:bg-tavern-medium hover:border-accent transition-all group'
-              >
-                <h2 className='text-xl font-semibold text-accent group-hover:text-accent-light transition-colors'>
-                  {category.name}
-                </h2>
-              </Link>
-            ))}
+          {/* Login/Register CTAs */}
+          <div className='flex gap-4 mt-8'>
+            <Link
+              href='/login'
+              className='px-6 py-3 rounded-lg bg-accent text-black font-semibold hover:bg-accent-light transition-colors'
+            >
+              Login
+            </Link>
+            <Link
+              href='/register'
+              className='px-6 py-3 rounded-lg border border-accent text-accent font-semibold hover:bg-tavern-light transition-colors'
+            >
+              Register
+            </Link>
           </div>
         </div>
       </div>
