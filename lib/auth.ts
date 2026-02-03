@@ -104,7 +104,7 @@ export async function getCurrentUser(): Promise<JWTPayload | null> {
 /**
  * Get current user with full data from database (including role)
  */
-export async function getCurrentUserWithRole(): Promise<{ userId: string; email: string; username: string; role: string } | null> {
+export async function getCurrentUserWithRole(): Promise<{ userId: string; email: string | null; username: string; role: string } | null> {
   const user = await getCurrentUser();
   if (!user) {
     return null;
