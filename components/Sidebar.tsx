@@ -20,8 +20,6 @@ export default async function Sidebar({ categoryId }: SidebarProps) {
     orderBy: { title: 'asc' }
   })
 
-  console.log('Sidebar - categories:', categories.length, 'challenges:', challenges.length, 'categoryId:', categoryId)
-
   return <SidebarClient 
     categories={categories} 
     challenges={challenges}

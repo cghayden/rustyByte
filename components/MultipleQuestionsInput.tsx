@@ -4,18 +4,31 @@ import { useState } from 'react';
 
 interface Question {
   id: string;
-  question: string;
-  answers: string;
+  questionId: string;
+  text: string;
+  answers: string[];
 }
 
-export default function MultipleQuestionsInput() {
-  const [questions, setQuestions] = useState<Question[]>([
-    { id: '1', question: '', answers: '' },
-  ]);
+interface MultipleQuestionsInputProps {
+  initialQuestions?: Question[];
+}
+
+export default function MultipleQuestionsInput({ initialQuestions }: MultipleQuestionsInputProps) {
+  const [questions, setQuestions] = useState<Question[]>(
+    initialQuestions && initialQuestions.length > 0
+      ? initialQuestions.map(q => ({
+          id: q.id,
+          questionId: q.questionId,
+          text: q.text,
+          answers: q.answers,
+        }))
+      : [{ id: 'new-0', questionId: '1', text: '', answers: [] }]
+  );
 
   const addQuestion = () => {
-    const newId = String(questions.length + 1);
-    setQuestions([...questions, { id: newId, question: '', answers: '' }]);
+    const newId = `new-${Date.now()}`;
+    const newQuestionId = String(questions.length + 1);
+    setQuestions([...questions, { id: newId, questionId: newQuestionId, text: '', answers: [] }]);
   };
 
   const removeQuestion = (id: string) => {
@@ -24,11 +37,7 @@ export default function MultipleQuestionsInput() {
     }
   };
 
-  const updateQuestion = (
-    id: string,
-    field: 'question' | 'answers',
-    value: string
-  ) => {
+  const updateQuestion = (id: string, field: 'text' | 'answers', value: string | string[]) => {
     setQuestions(
       questions.map((q) => (q.id === id ? { ...q, [field]: value } : q))
     );
@@ -72,9 +81,9 @@ export default function MultipleQuestionsInput() {
               type='text'
               id={`question-${question.id}`}
               name={`questions[${index}][question]`}
-              value={question.question}
+              value={question.text}
               onChange={(e) =>
-                updateQuestion(question.id, 'question', e.target.value)
+                updateQuestion(question.id, 'text', e.target.value)
               }
               required
               placeholder={`Enter question ${index + 1}...`}
@@ -94,9 +103,9 @@ export default function MultipleQuestionsInput() {
               type='text'
               id={`answers-${question.id}`}
               name={`questions[${index}][answers]`}
-              value={question.answers}
+              value={Array.isArray(question.answers) ? question.answers.join(', ') : question.answers}
               onChange={(e) =>
-                updateQuestion(question.id, 'answers', e.target.value)
+                updateQuestion(question.id, 'answers', e.target.value.split(',').map(a => a.trim()))
               }
               required
               placeholder='answer1, answer2, ANSWER1...'
@@ -108,11 +117,21 @@ export default function MultipleQuestionsInput() {
             </p>
           </div>
 
-          {/* Hidden inputs for form submission */}
+          {/* Hidden inputs for form submission - include question ID for edits */}
           <input
             type='hidden'
-            name={`questions[${index}][id]`}
+            name={`question-${index}-id`}
             value={question.id}
+          />
+          <input
+            type='hidden'
+            name={`question-${index}-text`}
+            value={question.text}
+          />
+          <input
+            type='hidden'
+            name={`question-${index}-answers`}
+            value={JSON.stringify(question.answers)}
           />
         </div>
       ))}

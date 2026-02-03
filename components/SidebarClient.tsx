@@ -32,8 +32,6 @@ export default function SidebarClient({
 
   const filteredChallenges = challenges.filter(ch => ch.categoryId === selectedCategoryId)
 
-  console.log('SidebarClient - categories:', categories.length, 'selectedId:', selectedCategoryId, 'filtered:', filteredChallenges.length)
-
   // Don't render sidebar if no categories
   if (categories.length === 0) {
     console.log('No categories - not rendering')

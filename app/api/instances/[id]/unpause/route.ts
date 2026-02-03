@@ -47,29 +47,42 @@ export async function POST(
       );
     }
 
-    // Unpause container
-    const unpaused = await dockerService.unpauseInstance(instance.containerName);
-
-    if (unpaused) {
-      // Update database status
-      await prisma.instance.update({
-        where: { id: instanceId },
-        data: {
-          status: 'running',
-          updatedAt: new Date(),
-        },
-      });
-
-      return NextResponse.json({
-        success: true,
-        message: 'Instance resumed successfully',
-      });
-    } else {
+    // Check actual container status first
+    const containerStatus = await dockerService.getInstanceStatus(instance.containerName);
+    
+    if (!containerStatus) {
       return NextResponse.json(
-        { error: 'Failed to unpause container' },
-        { status: 500 }
+        { error: 'Container not found' },
+        { status: 404 }
       );
     }
+
+    // Only unpause if actually paused
+    if (containerStatus.status === 'paused') {
+      try {
+        await dockerService.unpauseInstance(instance.containerName);
+      } catch (unpauseError: any) {
+        console.error('Error unpausing container:', unpauseError);
+        return NextResponse.json(
+          { error: 'Failed to unpause container' },
+          { status: 500 }
+        );
+      }
+    }
+
+    // Update database status to running
+    await prisma.instance.update({
+      where: { id: instanceId },
+      data: {
+        status: 'running',
+        updatedAt: new Date(),
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Instance resumed successfully',
+    });
   } catch (error) {
     console.error('Error unpausing instance:', error);
     return NextResponse.json(

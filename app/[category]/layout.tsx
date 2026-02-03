@@ -10,9 +10,7 @@ export default async function CategoryLayout({
   params: Promise<{ category: string }>;
 }) {
   const { category } = await params;
-  console.log('CategoryLayout - category param:', category);
   const categoryData = await getCategoryById(category);
-  console.log('CategoryLayout - categoryData:', categoryData);
   if (!categoryData) return notFound();
 
   return (
