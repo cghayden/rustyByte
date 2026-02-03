@@ -16,6 +16,10 @@ const categories = [
   { id: 'osint', name: 'OSINT' },
   { id: 'network-traffic', name: 'Network Traffic Analysis' },
   { id: 'exploitation-re', name: 'Exploitation and RE' },
+  { id: 'forensics', name: 'Forensics' },
+  { id: 'log-analysis', name: 'Log Analysis' },
+  { id: 'web-exploitation', name: 'Web Application Exploitation' },
+  { id: 'scanning-recon', name: 'Scanning and Recon' },
 ]
 
 async function seedCategories() {
