@@ -4,13 +4,19 @@ import prisma from '@/lib/db';
 import { generateSlug, makeSlugUnique } from '@/lib/utils';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { canCreateChallenges } from '@/lib/auth';
+import { canCreateChallenges, getCurrentUser } from '@/lib/auth';
 
 export async function createChallenge(formData: FormData) {
   // AUTHORIZATION: Only ADMIN and AUTHOR roles can create challenges
   const hasPermission = await canCreateChallenges();
   if (!hasPermission) {
     throw new Error('Unauthorized: You do not have permission to create challenges');
+  }
+
+  // Get current user for authorId
+  const user = await getCurrentUser();
+  if (!user) {
+    throw new Error('Not authenticated');
   }
 
   try {
@@ -106,6 +112,7 @@ export async function createChallenge(formData: FormData) {
     const _challenge = await prisma.challenge.create({
       data: {
         categoryId,
+        authorId: user.userId,
         title: title.trim(),
         slug,
         prompt: prompt.trim(),

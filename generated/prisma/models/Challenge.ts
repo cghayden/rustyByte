@@ -177,7 +177,7 @@ export type ChallengeGroupByOutputType = {
   title: string
   prompt: string
   categoryId: string
-  authorId: string | null
+  authorId: string
   createdAt: Date
   updatedAt: Date
   dockerImage: string | null
@@ -210,13 +210,13 @@ export type ChallengeWhereInput = {
   title?: Prisma.StringFilter<"Challenge"> | string
   prompt?: Prisma.StringFilter<"Challenge"> | string
   categoryId?: Prisma.StringFilter<"Challenge"> | string
-  authorId?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  authorId?: Prisma.StringFilter<"Challenge"> | string
   createdAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
   dockerImage?: Prisma.StringNullableFilter<"Challenge"> | string | null
   files?: Prisma.ChallengeFileListRelationFilter
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
-  author?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   questions?: Prisma.QuestionListRelationFilter
   instances?: Prisma.InstanceListRelationFilter
 }
@@ -227,7 +227,7 @@ export type ChallengeOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   prompt?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
-  authorId?: Prisma.SortOrderInput | Prisma.SortOrder
+  authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   dockerImage?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -248,13 +248,13 @@ export type ChallengeWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringFilter<"Challenge"> | string
   prompt?: Prisma.StringFilter<"Challenge"> | string
   categoryId?: Prisma.StringFilter<"Challenge"> | string
-  authorId?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  authorId?: Prisma.StringFilter<"Challenge"> | string
   createdAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
   dockerImage?: Prisma.StringNullableFilter<"Challenge"> | string | null
   files?: Prisma.ChallengeFileListRelationFilter
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
-  author?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   questions?: Prisma.QuestionListRelationFilter
   instances?: Prisma.InstanceListRelationFilter
 }, "id" | "categoryId_slug">
@@ -265,7 +265,7 @@ export type ChallengeOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   prompt?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
-  authorId?: Prisma.SortOrderInput | Prisma.SortOrder
+  authorId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   dockerImage?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -283,7 +283,7 @@ export type ChallengeScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"Challenge"> | string
   prompt?: Prisma.StringWithAggregatesFilter<"Challenge"> | string
   categoryId?: Prisma.StringWithAggregatesFilter<"Challenge"> | string
-  authorId?: Prisma.StringNullableWithAggregatesFilter<"Challenge"> | string | null
+  authorId?: Prisma.StringWithAggregatesFilter<"Challenge"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Challenge"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Challenge"> | Date | string
   dockerImage?: Prisma.StringNullableWithAggregatesFilter<"Challenge"> | string | null
@@ -299,7 +299,7 @@ export type ChallengeCreateInput = {
   dockerImage?: string | null
   files?: Prisma.ChallengeFileCreateNestedManyWithoutChallengeInput
   category: Prisma.CategoryCreateNestedOneWithoutChallengesInput
-  author?: Prisma.UserCreateNestedOneWithoutChallengesInput
+  author: Prisma.UserCreateNestedOneWithoutChallengesInput
   questions?: Prisma.QuestionCreateNestedManyWithoutChallengeInput
   instances?: Prisma.InstanceCreateNestedManyWithoutChallengeInput
 }
@@ -310,7 +310,7 @@ export type ChallengeUncheckedCreateInput = {
   title: string
   prompt: string
   categoryId: string
-  authorId?: string | null
+  authorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
@@ -329,7 +329,7 @@ export type ChallengeUpdateInput = {
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   files?: Prisma.ChallengeFileUpdateManyWithoutChallengeNestedInput
   category?: Prisma.CategoryUpdateOneRequiredWithoutChallengesNestedInput
-  author?: Prisma.UserUpdateOneWithoutChallengesNestedInput
+  author?: Prisma.UserUpdateOneRequiredWithoutChallengesNestedInput
   questions?: Prisma.QuestionUpdateManyWithoutChallengeNestedInput
   instances?: Prisma.InstanceUpdateManyWithoutChallengeNestedInput
 }
@@ -340,7 +340,7 @@ export type ChallengeUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   prompt?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -355,7 +355,7 @@ export type ChallengeCreateManyInput = {
   title: string
   prompt: string
   categoryId: string
-  authorId?: string | null
+  authorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
@@ -377,7 +377,7 @@ export type ChallengeUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   prompt?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -628,7 +628,7 @@ export type ChallengeScalarWhereInput = {
   title?: Prisma.StringFilter<"Challenge"> | string
   prompt?: Prisma.StringFilter<"Challenge"> | string
   categoryId?: Prisma.StringFilter<"Challenge"> | string
-  authorId?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  authorId?: Prisma.StringFilter<"Challenge"> | string
   createdAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
   dockerImage?: Prisma.StringNullableFilter<"Challenge"> | string | null
@@ -643,7 +643,7 @@ export type ChallengeCreateWithoutCategoryInput = {
   updatedAt?: Date | string
   dockerImage?: string | null
   files?: Prisma.ChallengeFileCreateNestedManyWithoutChallengeInput
-  author?: Prisma.UserCreateNestedOneWithoutChallengesInput
+  author: Prisma.UserCreateNestedOneWithoutChallengesInput
   questions?: Prisma.QuestionCreateNestedManyWithoutChallengeInput
   instances?: Prisma.InstanceCreateNestedManyWithoutChallengeInput
 }
@@ -653,7 +653,7 @@ export type ChallengeUncheckedCreateWithoutCategoryInput = {
   slug: string
   title: string
   prompt: string
-  authorId?: string | null
+  authorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
@@ -698,7 +698,7 @@ export type ChallengeCreateWithoutQuestionsInput = {
   dockerImage?: string | null
   files?: Prisma.ChallengeFileCreateNestedManyWithoutChallengeInput
   category: Prisma.CategoryCreateNestedOneWithoutChallengesInput
-  author?: Prisma.UserCreateNestedOneWithoutChallengesInput
+  author: Prisma.UserCreateNestedOneWithoutChallengesInput
   instances?: Prisma.InstanceCreateNestedManyWithoutChallengeInput
 }
 
@@ -708,7 +708,7 @@ export type ChallengeUncheckedCreateWithoutQuestionsInput = {
   title: string
   prompt: string
   categoryId: string
-  authorId?: string | null
+  authorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
@@ -742,7 +742,7 @@ export type ChallengeUpdateWithoutQuestionsInput = {
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   files?: Prisma.ChallengeFileUpdateManyWithoutChallengeNestedInput
   category?: Prisma.CategoryUpdateOneRequiredWithoutChallengesNestedInput
-  author?: Prisma.UserUpdateOneWithoutChallengesNestedInput
+  author?: Prisma.UserUpdateOneRequiredWithoutChallengesNestedInput
   instances?: Prisma.InstanceUpdateManyWithoutChallengeNestedInput
 }
 
@@ -752,7 +752,7 @@ export type ChallengeUncheckedUpdateWithoutQuestionsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   prompt?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -769,7 +769,7 @@ export type ChallengeCreateWithoutFilesInput = {
   updatedAt?: Date | string
   dockerImage?: string | null
   category: Prisma.CategoryCreateNestedOneWithoutChallengesInput
-  author?: Prisma.UserCreateNestedOneWithoutChallengesInput
+  author: Prisma.UserCreateNestedOneWithoutChallengesInput
   questions?: Prisma.QuestionCreateNestedManyWithoutChallengeInput
   instances?: Prisma.InstanceCreateNestedManyWithoutChallengeInput
 }
@@ -780,7 +780,7 @@ export type ChallengeUncheckedCreateWithoutFilesInput = {
   title: string
   prompt: string
   categoryId: string
-  authorId?: string | null
+  authorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
@@ -813,7 +813,7 @@ export type ChallengeUpdateWithoutFilesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.CategoryUpdateOneRequiredWithoutChallengesNestedInput
-  author?: Prisma.UserUpdateOneWithoutChallengesNestedInput
+  author?: Prisma.UserUpdateOneRequiredWithoutChallengesNestedInput
   questions?: Prisma.QuestionUpdateManyWithoutChallengeNestedInput
   instances?: Prisma.InstanceUpdateManyWithoutChallengeNestedInput
 }
@@ -824,7 +824,7 @@ export type ChallengeUncheckedUpdateWithoutFilesInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   prompt?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -842,7 +842,7 @@ export type ChallengeCreateWithoutInstancesInput = {
   dockerImage?: string | null
   files?: Prisma.ChallengeFileCreateNestedManyWithoutChallengeInput
   category: Prisma.CategoryCreateNestedOneWithoutChallengesInput
-  author?: Prisma.UserCreateNestedOneWithoutChallengesInput
+  author: Prisma.UserCreateNestedOneWithoutChallengesInput
   questions?: Prisma.QuestionCreateNestedManyWithoutChallengeInput
 }
 
@@ -852,7 +852,7 @@ export type ChallengeUncheckedCreateWithoutInstancesInput = {
   title: string
   prompt: string
   categoryId: string
-  authorId?: string | null
+  authorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
@@ -886,7 +886,7 @@ export type ChallengeUpdateWithoutInstancesInput = {
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   files?: Prisma.ChallengeFileUpdateManyWithoutChallengeNestedInput
   category?: Prisma.CategoryUpdateOneRequiredWithoutChallengesNestedInput
-  author?: Prisma.UserUpdateOneWithoutChallengesNestedInput
+  author?: Prisma.UserUpdateOneRequiredWithoutChallengesNestedInput
   questions?: Prisma.QuestionUpdateManyWithoutChallengeNestedInput
 }
 
@@ -896,7 +896,7 @@ export type ChallengeUncheckedUpdateWithoutInstancesInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   prompt?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
-  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -959,7 +959,7 @@ export type ChallengeCreateManyCategoryInput = {
   slug: string
   title: string
   prompt: string
-  authorId?: string | null
+  authorId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
@@ -974,7 +974,7 @@ export type ChallengeUpdateWithoutCategoryInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   files?: Prisma.ChallengeFileUpdateManyWithoutChallengeNestedInput
-  author?: Prisma.UserUpdateOneWithoutChallengesNestedInput
+  author?: Prisma.UserUpdateOneRequiredWithoutChallengesNestedInput
   questions?: Prisma.QuestionUpdateManyWithoutChallengeNestedInput
   instances?: Prisma.InstanceUpdateManyWithoutChallengeNestedInput
 }
@@ -984,7 +984,7 @@ export type ChallengeUncheckedUpdateWithoutCategoryInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   prompt?: Prisma.StringFieldUpdateOperationsInput | string
-  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -998,7 +998,7 @@ export type ChallengeUncheckedUpdateManyWithoutCategoryInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   prompt?: Prisma.StringFieldUpdateOperationsInput | string
-  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1065,7 +1065,7 @@ export type ChallengeSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   dockerImage?: boolean
   files?: boolean | Prisma.Challenge$filesArgs<ExtArgs>
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
-  author?: boolean | Prisma.Challenge$authorArgs<ExtArgs>
+  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   questions?: boolean | Prisma.Challenge$questionsArgs<ExtArgs>
   instances?: boolean | Prisma.Challenge$instancesArgs<ExtArgs>
   _count?: boolean | Prisma.ChallengeCountOutputTypeDefaultArgs<ExtArgs>
@@ -1082,7 +1082,7 @@ export type ChallengeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   updatedAt?: boolean
   dockerImage?: boolean
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
-  author?: boolean | Prisma.Challenge$authorArgs<ExtArgs>
+  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["challenge"]>
 
 export type ChallengeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1096,7 +1096,7 @@ export type ChallengeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   updatedAt?: boolean
   dockerImage?: boolean
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
-  author?: boolean | Prisma.Challenge$authorArgs<ExtArgs>
+  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["challenge"]>
 
 export type ChallengeSelectScalar = {
@@ -1115,18 +1115,18 @@ export type ChallengeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type ChallengeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   files?: boolean | Prisma.Challenge$filesArgs<ExtArgs>
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
-  author?: boolean | Prisma.Challenge$authorArgs<ExtArgs>
+  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   questions?: boolean | Prisma.Challenge$questionsArgs<ExtArgs>
   instances?: boolean | Prisma.Challenge$instancesArgs<ExtArgs>
   _count?: boolean | Prisma.ChallengeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ChallengeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
-  author?: boolean | Prisma.Challenge$authorArgs<ExtArgs>
+  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type ChallengeIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
-  author?: boolean | Prisma.Challenge$authorArgs<ExtArgs>
+  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $ChallengePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1134,7 +1134,7 @@ export type $ChallengePayload<ExtArgs extends runtime.Types.Extensions.InternalA
   objects: {
     files: Prisma.$ChallengeFilePayload<ExtArgs>[]
     category: Prisma.$CategoryPayload<ExtArgs>
-    author: Prisma.$UserPayload<ExtArgs> | null
+    author: Prisma.$UserPayload<ExtArgs>
     questions: Prisma.$QuestionPayload<ExtArgs>[]
     instances: Prisma.$InstancePayload<ExtArgs>[]
   }
@@ -1144,7 +1144,7 @@ export type $ChallengePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     title: string
     prompt: string
     categoryId: string
-    authorId: string | null
+    authorId: string
     createdAt: Date
     updatedAt: Date
     dockerImage: string | null
@@ -1544,7 +1544,7 @@ export interface Prisma__ChallengeClient<T, Null = never, ExtArgs extends runtim
   readonly [Symbol.toStringTag]: "PrismaPromise"
   files<T extends Prisma.Challenge$filesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$filesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChallengeFilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   category<T extends Prisma.CategoryDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CategoryDefaultArgs<ExtArgs>>): Prisma.Prisma__CategoryClient<runtime.Types.Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  author<T extends Prisma.Challenge$authorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$authorArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  author<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   questions<T extends Prisma.Challenge$questionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$questionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   instances<T extends Prisma.Challenge$instancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Challenge$instancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InstancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -2002,25 +2002,6 @@ export type Challenge$filesArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.ChallengeFileScalarFieldEnum | Prisma.ChallengeFileScalarFieldEnum[]
-}
-
-/**
- * Challenge.author
- */
-export type Challenge$authorArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the User
-   */
-  select?: Prisma.UserSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the User
-   */
-  omit?: Prisma.UserOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.UserInclude<ExtArgs> | null
-  where?: Prisma.UserWhereInput
 }
 
 /**
