@@ -14,14 +14,15 @@ enum Role {
 }
 
 model User {
-  id        String     @id @default(cuid())
-  email     String?    @unique
-  username  String     @unique
-  role      Role       @default(PLAYER)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  password  String
-  instances Instance[] // User's container instances
+  id         String      @id @default(cuid())
+  email      String?     @unique
+  username   String      @unique
+  role       Role        @default(PLAYER)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  password   String
+  instances  Instance[]  // User's container instances
+  challenges Challenge[] // Challenges authored by this user
 
   @@map("users")
 }
@@ -42,11 +43,13 @@ model Challenge {
   title       String
   prompt      String
   categoryId  String
+  authorId    String?         // Optional: ID of the user who created this challenge
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   dockerImage String?
   files       ChallengeFile[]
   category    Category        @relation(fields: [categoryId], references: [id])
+  author      User?           @relation(fields: [authorId], references: [id])
   questions   Question[]
   instances   Instance[]      // Container instances for this challenge
 
