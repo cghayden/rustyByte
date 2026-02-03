@@ -48,7 +48,8 @@ export default function TerminalInstance({
     setError(null);
 
     try {
-      // First check if there's a paused instance to resume
+      // First check if there's a paused instance for this challenge and user to resume
+      //TODO: a user may have more than one paused instance - need to identify with something other than only userId
       const checkResponse = await fetch(`/api/instances?userId=${userId}`);
       const checkData = await checkResponse.json();
       
@@ -254,7 +255,11 @@ export default function TerminalInstance({
               */}
               <div className='border border-gray-700 rounded overflow-hidden' style={{ height: '500px' }}>
                 <iframe
-                  src={`https://bristolctf.club/terminal/${instance.hostPort}`}
+                  src={
+                    process.env.NEXT_PUBLIC_TERMINAL_BASE_URL
+                      ? `${process.env.NEXT_PUBLIC_TERMINAL_BASE_URL}/${instance.hostPort}`
+                      : `http://localhost:${instance.hostPort}`
+                  }
                   className='w-full h-full'
                   title='Terminal'
                   style={{ border: 'none' }}
@@ -262,7 +267,7 @@ export default function TerminalInstance({
               </div>
 
               {/* Alternative: Custom XTerm implementation (currently has WebSocket issues) */}
-              <details className='mt-4'>
+              {/* <details className='mt-4'>
                 <summary className='text-sm text-gray-400 cursor-pointer hover:text-gray-300'>
                   Alternative: Custom terminal (experimental)
                 </summary>
@@ -272,7 +277,7 @@ export default function TerminalInstance({
                     className='w-full'
                   />
                 </div>
-              </details>
+              </details> */}
             </div>
           )}
 
