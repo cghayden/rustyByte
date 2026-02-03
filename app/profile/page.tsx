@@ -14,6 +14,15 @@ export default function ProfilePage() {
   const [success, setSuccess] = useState('');
   const [saving, setSaving] = useState(false);
 
+  // Password change state
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
+
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
@@ -73,6 +82,60 @@ export default function ProfilePage() {
     setNewUsername(user?.username || '');
     setIsEditing(false);
     setError('');
+  };
+
+  const handleChangePassword = async () => {
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setPasswordError('All password fields are required');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('New passwords do not match');
+      return;
+    }
+
+    setSavingPassword(true);
+
+    try {
+      const response = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data.details) {
+          setPasswordError(data.details.join(', '));
+        } else {
+          setPasswordError(data.error || 'Failed to change password');
+        }
+        return;
+      }
+
+      setPasswordSuccess('Password changed successfully!');
+      setIsChangingPassword(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch {
+      setPasswordError('Network error occurred');
+    } finally {
+      setSavingPassword(false);
+    }
+  };
+
+  const handleCancelPassword = () => {
+    setIsChangingPassword(false);
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setPasswordError('');
   };
 
   if (loading) {
@@ -183,13 +246,88 @@ export default function ProfilePage() {
                     Change Username
                   </button>
                 )}
-                <button
-                  disabled
-                  className='bg-gray-600 text-gray-400 px-4 py-2 rounded-md cursor-not-allowed'
-                >
-                  Change Password (Coming Soon)
-                </button>
+                {!isChangingPassword && (
+                  <button
+                    onClick={() => setIsChangingPassword(true)}
+                    className='bg-accent text-black px-4 py-2 rounded-md hover:bg-accent-light focus:outline-none focus:ring-2 focus:ring-accent'
+                  >
+                    Change Password
+                  </button>
+                )}
               </div>
+
+              {isChangingPassword && (
+                <div className='mt-6 pt-6 border-t border-accent/20'>
+                  <h3 className='text-md font-medium mb-4'>Change Password</h3>
+                  
+                  {passwordError && (
+                    <div className='mb-4 p-3 bg-red-900/30 border border-red-400/50 text-red-300 rounded text-sm'>
+                      {passwordError}
+                    </div>
+                  )}
+
+                  {passwordSuccess && (
+                    <div className='mb-4 p-3 bg-green-900/30 border border-green-400/50 text-green-300 rounded text-sm'>
+                      {passwordSuccess}
+                    </div>
+                  )}
+
+                  <div className='space-y-4 max-w-md'>
+                    <div>
+                      <label className='block text-sm font-medium text-gray-300 mb-1'>
+                        Current Password
+                      </label>
+                      <input
+                        type='password'
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        className='w-full px-3 py-2 border border-accent/30 bg-tavern-dark rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-accent'
+                        disabled={savingPassword}
+                      />
+                    </div>
+                    <div>
+                      <label className='block text-sm font-medium text-gray-300 mb-1'>
+                        New Password
+                      </label>
+                      <input
+                        type='password'
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className='w-full px-3 py-2 border border-accent/30 bg-tavern-dark rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-accent'
+                        disabled={savingPassword}
+                      />
+                    </div>
+                    <div>
+                      <label className='block text-sm font-medium text-gray-300 mb-1'>
+                        Confirm New Password
+                      </label>
+                      <input
+                        type='password'
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className='w-full px-3 py-2 border border-accent/30 bg-tavern-dark rounded-md focus:outline-none focus:ring-2 focus:ring-accent text-accent'
+                        disabled={savingPassword}
+                      />
+                    </div>
+                    <div className='flex gap-3 pt-2'>
+                      <button
+                        onClick={handleChangePassword}
+                        disabled={savingPassword}
+                        className='bg-accent text-black px-4 py-2 rounded-md hover:bg-accent-light focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-50'
+                      >
+                        {savingPassword ? 'Saving...' : 'Update Password'}
+                      </button>
+                      <button
+                        onClick={handleCancelPassword}
+                        disabled={savingPassword}
+                        className='bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50'
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
