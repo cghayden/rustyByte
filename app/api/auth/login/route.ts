@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import {
   comparePassword,
-  validateEmail,
   generateToken,
   setAuthCookie,
 } from '@/lib/auth';
@@ -44,7 +43,6 @@ export async function POST(request: NextRequest) {
     // Generate JWT token
     const token = generateToken({
       userId: user.id,
-      email: user.email,
       username: user.username,
       role: user.role,
     });
@@ -57,7 +55,6 @@ export async function POST(request: NextRequest) {
         message: 'Login successful',
         user: {
           id: user.id,
-          email: user.email,
           username: user.username,
           role: user.role,
           createdAt: user.createdAt,

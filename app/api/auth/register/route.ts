@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import {
   hashPassword,
-  validateEmail,
   validatePassword,
   generateToken,
   setAuthCookie,
@@ -11,20 +10,12 @@ import {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, username, password } = body;
+    const { username, password } = body;
 
     // Validate input
-    if (!email || !username || !password) {
+    if (!username || !password) {
       return NextResponse.json(
-        { error: 'Email, username, and password are required' },
-        { status: 400 }
-      );
-    }
-
-    // Validate email format
-    if (!validateEmail(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
+        { error: 'Username and password are required' },
         { status: 400 }
       );
     }
@@ -38,26 +29,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user already exists
-    const existingUser = await db.user.findFirst({
-      where: {
-        OR: [{ email }, { username }],
-      },
+    // Check if username already exists
+    const existingUser = await db.user.findUnique({
+      where: { username },
     });
 
     if (existingUser) {
-      if (existingUser.email === email) {
-        return NextResponse.json(
-          { error: 'User with this email already exists' },
-          { status: 409 }
-        );
-      }
-      if (existingUser.username === username) {
-        return NextResponse.json(
-          { error: 'Username is already taken' },
-          { status: 409 }
-        );
-      }
+      return NextResponse.json(
+        { error: 'Username is already taken' },
+        { status: 409 }
+      );
     }
 
     // Hash password
@@ -66,13 +47,11 @@ export async function POST(request: NextRequest) {
     // Create user
     const user = await db.user.create({
       data: {
-        email,
         username,
         password: hashedPassword,
       },
       select: {
         id: true,
-        email: true,
         username: true,
         role: true,
         createdAt: true,
@@ -82,7 +61,6 @@ export async function POST(request: NextRequest) {
     // Generate JWT token
     const token = generateToken({
       userId: user.id,
-      email: user.email,
       username: user.username,
       role: user.role,
     });
@@ -95,7 +73,6 @@ export async function POST(request: NextRequest) {
         message: 'User created successfully',
         user: {
           id: user.id,
-          email: user.email,
           username: user.username,
           role: user.role,
           createdAt: user.createdAt,

@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface User {
   id: string;
-  email: string;
+  email?: string | null;
   username: string;
   role: string;
 }
@@ -14,7 +14,6 @@ interface AuthContextType {
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
   register: (
-    email: string,
     username: string,
     password: string
   ) => Promise<void>;
@@ -64,7 +63,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const register = async (
-    email: string,
     username: string,
     password: string
   ) => {
@@ -73,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, username, password }),
+      body: JSON.stringify({ username, password }),
     });
 
     const data = await response.json();
