@@ -1,5 +1,61 @@
-the app/[category]/[challenge]/edit page should give the options to change the category, title, prompt and answers, and to add another question
-
-make sure terminals pause when leaving page.
+make sure terminals pause when leaving page and start up again when returning.
 When should we kill and remove a container?
 
+
+# Scan File Uploads. 
+
+A. AWS Lambda + ClamAV (DIY, cheapest)
+
+Trigger a Lambda function when files upload to S3
+Lambda runs ClamAV (open-source antivirus) to scan the file
+Move clean files to a "verified" bucket, quarantine bad ones
+Cost: Just Lambda execution time (~$0.20 per 1M requests)
+
+or
+
+B. Amazon GuardDuty Malware Protection for S3
+
+AWS's built-in option (released 2024)
+Automatically scans objects uploaded to S3
+Integrates with Security Hub for alerts
+Cost: ~$0.60 per GB scanned + per-object fee
+
+or Third-Party Services :
+
+C. Trend Micro Cloud One - File Storage Security
+
+Drop-in S3 scanning, very easy to set up
+Deploys via CloudFormation template
+~$0.10 per 1,000 files scanned
+
+
+
+
+
+Create Themes:
+what if we wanted to keep the current design system but make an alternative design system?  
+
+Can you put together a markdown document called THEMES.md that would outline what we would need to do. 
+
+Brainstorm Ideas  and steps that I want to incorporate into that THEMES.md file: 
+
+I would remove the 'tavern' from the color class names, and make a more formalized naming convention that is more in line with tailwinds numbering system.  So our themes would have names like 'tavern', 'ocean', 'space', and the colors would have names like tavern-100, tavern-200, etc. 
+
+examples of some Other theme related class names we would need: (replace 'theme' with the name of the theme):
+ theme-button-action, 
+ theme-button-active, 
+ theme-button-disabled,
+ theme-button-danger,
+ theme-complementary-?,
+theme-complementary-?,
+theme-white,
+theme-text-light,
+theme-text-dark
+
+
+#Implementation: 
+theme choice could go in dashboard for the user,
+
+theme choice could be saved in local storage or on the users database entry to be consistent across browsers
+
+classNames would have to be dynamic: e.g. [theme]-bg-dark. and the theme would have to re-render in browser?
