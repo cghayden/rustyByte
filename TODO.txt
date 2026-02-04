@@ -39,7 +39,7 @@ Can you put together a markdown document called THEMES.md that would outline wha
 
 Brainstorm Ideas  and steps that I want to incorporate into that THEMES.md file: 
 
-I would remove the 'tavern' from the color class names, and make a more formalized naming convention that is more in line with tailwinds numbering system.  So our themes wold have names like 'tavern', 'ocean', 'space', and the colors would have names like tavern-100, tavern-200, etc. 
+I would remove the 'tavern' from the color class names, and make a more formalized naming convention that is more in line with tailwinds numbering system.  So our themes would have names like 'tavern', 'ocean', 'space', and the colors would have names like tavern-100, tavern-200, etc. 
 
 examples of some Other theme related class names we would need: (replace 'theme' with the name of the theme):
  theme-button-action, 
