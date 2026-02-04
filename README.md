@@ -113,7 +113,7 @@ git push origin your-feature-name
 4. Write a brief description of what you changed and why
 5. Click "Create pull request"
 
-I'll review and merge it when ready, or ask you to make futher changes.
+I'll review and merge it when ready, or ask you to make further changes.
 
 ---
 
