@@ -12,6 +12,16 @@ const prisma = new PrismaClient({ adapter });
 
 async function addBasicLinuxChallenge() {
   try {
+    // Get the first admin user to use as author
+    const adminUser = await prisma.user.findFirst({
+      where: { role: 'ADMIN' },
+    });
+
+    if (!adminUser) {
+      console.error('❌ No admin user found. Please create an admin user first.');
+      process.exit(1);
+    }
+
     // Check if terminal category exists, create if not
     let terminalCategory = await prisma.category.findUnique({
       where: { id: 'terminal' },
@@ -46,6 +56,7 @@ async function addBasicLinuxChallenge() {
     const challenge = await prisma.challenge.create({
       data: {
         categoryId: 'terminal',
+        authorId: adminUser.id,
         slug: 'basic-linux',
         title: 'Basic Linux Terminal',
         prompt: `Welcome to the Basic Linux Terminal challenge!

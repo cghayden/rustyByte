@@ -1,5 +1,3 @@
-the app/[category]/[challenge]/edit page should give the options to change the category, title, prompt and answers, and to add another question
-
-make sure terminals pause when leaving page.
+make sure terminals pause when leaving page and start up again when returning.
 When should we kill and remove a container?
 

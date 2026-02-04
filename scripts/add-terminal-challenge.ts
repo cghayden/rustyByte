@@ -20,6 +20,16 @@ async function addTerminalChallenge() {
   console.log('🖥️  Adding terminal-based challenge...');
 
   try {
+    // Get the first admin user to use as author
+    const adminUser = await prisma.user.findFirst({
+      where: { role: 'ADMIN' },
+    });
+
+    if (!adminUser) {
+      console.error('❌ No admin user found. Please create an admin user first.');
+      process.exit(1);
+    }
+
     // Make sure we have a terminal category
     await prisma.category.upsert({
       where: { id: 'terminal' },
@@ -60,6 +70,7 @@ Navigate through the filesystem, explore directories, and find the hidden flag s
 
 Click "Start Terminal" below to launch your dedicated Linux environment!`,
         categoryId: 'terminal',
+        authorId: adminUser.id,
         dockerImage: 'ctf-basic-linux',
       },
     });
