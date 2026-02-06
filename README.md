@@ -9,12 +9,14 @@ A prototype for a Capture the Flag platform.
 ### Initial Setup (One Time)
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/corey/rustyByte.git
    cd rustyByte
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
@@ -34,17 +36,20 @@ A prototype for a Capture the Flag platform.
 This project uses **Prettier** for automatic code formatting. This ensures all our code looks consistent regardless of who wrote it.
 
 **How it works:**
+
 - When you save a file, it automatically formats (via `.vscode/settings.json`)
 - The formatting rules are defined in `.prettierrc`
 - These settings only apply to this project — your personal VS Code settings for other projects are not affected
 
 **Manual formatting:**
+
 ```bash
 npm run format        # Format all files
 npm run format:check  # Check if files are formatted (doesn't change them)
 ```
 
 **What Prettier handles:**
+
 - Semicolons, quotes, indentation
 - Line length (wraps at 100 characters)
 - Trailing commas
@@ -59,6 +64,7 @@ You don't need to think about formatting — just write code and save!
 #### Before You Start Working
 
 **Always pull the latest changes first:**
+
 ```bash
 git checkout main
 git pull origin main
@@ -75,6 +81,7 @@ git checkout -b your-feature-name
 ```
 
 Use descriptive branch names like:
+
 - `add-leaderboard`
 - `fix-login-bug`
 - `update-challenge-ui`
@@ -82,10 +89,13 @@ Use descriptive branch names like:
 #### Making Commits
 
 1. **Stage your changes**
+
    ```bash
    git add .
    ```
+
    Or stage specific files:
+
    ```bash
    git add path/to/file.tsx
    ```
@@ -97,10 +107,10 @@ Use descriptive branch names like:
 
 ### When you are finished working on your feature:
 
-**push your local branch, go to github and create a pull request to ask your changes to be pulled into main branch:**
+**Push your local branch to GitHub, then create a pull request to ask your changes to be pulled into main:**
 
 ```bash
-git push origin your-feature-name
+git push -u origin your-feature-name
 ```
 
 ---
@@ -141,14 +151,14 @@ git pull origin main
 git branch -d your-feature-name  # Delete your old branch
 ```
 
-
 ### If there are changes to main that you want to have while you're still working on your features:
 
 **while still in your working directory:**
-git fetch origin 
+git fetch origin
 git log origin/main --oneline -5
 
 #### After fetching, you can:
+
 **See the diff between your branch and remote main**
 git diff feature-a origin/main
 
@@ -157,9 +167,8 @@ git merge origin/main
 
 **Or if you want to update your local main (switch first):**
 git checkout main
-git merge origin/main    # Now local main matches remote
-git checkout feature-a   # Go back to your branch
-
+git merge origin/main # Now local main matches remote
+git checkout feature-a # Go back to your branch
 
 ---
 
@@ -177,11 +186,13 @@ git checkout feature-a   # Go back to your branch
 If you get a merge conflict:
 
 1. **Git will tell you which files have conflicts**
+
    ```
    CONFLICT (content): Merge conflict in app/page.tsx
    ```
 
 2. **Open the conflicted file** - You'll see markers like:
+
    ```
    <<<<<<< HEAD
    your changes
@@ -193,6 +204,7 @@ If you get a merge conflict:
 3. **Edit the file** - Keep the code you want, remove the markers
 
 4. **Stage and commit the resolution**
+
    ```bash
    git add .
    git commit -m "Resolve merge conflict in app/page.tsx"
@@ -214,11 +226,13 @@ If you don't have Node.js installed, here's how to get it:
 ### Mac
 
 **Option 1: Direct Download (Easiest)**
+
 1. Go to [nodejs.org](https://nodejs.org)
 2. Download the LTS (Long Term Support) version
 3. Run the installer
 
 **Option 2: Using Homebrew**
+
 ```bash
 # Install Homebrew first if you don't have it:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -230,11 +244,13 @@ brew install node
 ### Windows
 
 **Option 1: Direct Download (Easiest)**
+
 1. Go to [nodejs.org](https://nodejs.org)
 2. Download the LTS (Long Term Support) version
 3. Run the installer (keep all default options)
 
 **Option 2: Using winget (Windows 11 / Windows 10)**
+
 ```powershell
 winget install OpenJS.NodeJS.LTS
 ```
@@ -242,6 +258,7 @@ winget install OpenJS.NodeJS.LTS
 ### Verify Installation
 
 After installing, open a new terminal and run:
+
 ```bash
 node --version
 npm --version
@@ -251,16 +268,16 @@ You should see version numbers for both. If you see errors, try closing and reop
 
 ### Git Quick Reference
 
-| Task | Command |
-|------|---------|
-| Pull latest | `git pull origin main` |
-| Create branch | `git checkout -b branch-name` |
-| Stage changes | `git add .` |
-| Commit | `git commit -m "message"` |
-| Push branch | `git push origin branch-name` |
-| Switch to main | `git checkout main` |
-| Delete branch | `git branch -d branch-name` |
-| See status | `git status` |
-| See branches | `git branch` |
+| Task           | Command                       |
+| -------------- | ----------------------------- |
+| Pull latest    | `git pull origin main`        |
+| Create branch  | `git checkout -b branch-name` |
+| Stage changes  | `git add .`                   |
+| Commit         | `git commit -m "message"`     |
+| Push branch    | `git push origin branch-name` |
+| Switch to main | `git checkout main`           |
+| Delete branch  | `git branch -d branch-name`   |
+| See status     | `git status`                  |
+| See branches   | `git branch`                  |
 
 ---
