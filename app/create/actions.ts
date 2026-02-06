@@ -5,6 +5,23 @@ import { generateSlug, makeSlugUnique } from '@/lib/utils';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { canCreateChallenges, getCurrentUser } from '@/lib/auth';
+import { isValidDockerImage } from '@/lib/dockerImages';
+import Docker from 'dockerode';
+
+const docker = new Docker({ socketPath: '/var/run/docker.sock' });
+
+/**
+ * Validates that a Docker image exists on the server
+ */
+async function validateDockerImageExists(imageTag: string): Promise<boolean> {
+  try {
+    const image = docker.getImage(imageTag);
+    await image.inspect();
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export async function createChallenge(formData: FormData) {
   // AUTHORIZATION: Only ADMIN and AUTHOR roles can create challenges
@@ -24,6 +41,8 @@ export async function createChallenge(formData: FormData) {
     const title = formData.get('title') as string;
     const prompt = formData.get('prompt') as string;
     const requiresFiles = formData.get('requiresFiles') === 'on';
+    const requiresTerminal = formData.get('requiresTerminal') === 'on';
+    const dockerImage = requiresTerminal ? (formData.get('dockerImage') as string) : null;
 
     // Basic validation
     if (!title || title.trim().length === 0) {
@@ -36,6 +55,26 @@ export async function createChallenge(formData: FormData) {
 
     if (!prompt || prompt.trim().length === 0) {
       throw new Error('Challenge prompt is required');
+    }
+
+    // Validate Docker image if terminal is required
+    if (requiresTerminal) {
+      if (!dockerImage) {
+        throw new Error('Docker image is required for terminal challenges');
+      }
+
+      // Check if image is in allowed list
+      if (!isValidDockerImage(dockerImage)) {
+        throw new Error('Selected Docker image is not in the allowed list');
+      }
+
+      // Check if image exists on server
+      const imageExists = await validateDockerImageExists(dockerImage);
+      if (!imageExists) {
+        throw new Error(
+          `Docker image "${dockerImage}" not found on server. Please build it first.`
+        );
+      }
     }
 
     // Check if title already exists
@@ -77,15 +116,10 @@ export async function createChallenge(formData: FormData) {
     // Parse multiple questions from form data
     let questionIndex = 0;
     while (formData.get(`questions[${questionIndex}][question]`)) {
-      const questionText = formData.get(
-        `questions[${questionIndex}][question]`
-      ) as string;
-      const answersInput = formData.get(
-        `questions[${questionIndex}][answers]`
-      ) as string;
+      const questionText = formData.get(`questions[${questionIndex}][question]`) as string;
+      const answersInput = formData.get(`questions[${questionIndex}][answers]`) as string;
       const questionId =
-        (formData.get(`questions[${questionIndex}][id]`) as string) ||
-        `q${questionIndex + 1}`;
+        (formData.get(`questions[${questionIndex}][id]`) as string) || `q${questionIndex + 1}`;
 
       if (questionText && answersInput) {
         // Parse comma-separated answers into an array
@@ -116,6 +150,7 @@ export async function createChallenge(formData: FormData) {
         title: title.trim(),
         slug,
         prompt: prompt.trim(),
+        dockerImage,
         questions: {
           create: questions,
         },
