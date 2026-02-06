@@ -4,6 +4,23 @@ import prisma from '@/lib/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { canCreateChallenges, getCurrentUser } from '@/lib/auth';
+import { isValidDockerImage } from '@/lib/dockerImages';
+import Docker from 'dockerode';
+
+const docker = new Docker({ socketPath: '/var/run/docker.sock' });
+
+/**
+ * Validates that a Docker image exists on the server
+ */
+async function validateDockerImageExists(imageTag: string): Promise<boolean> {
+  try {
+    const image = docker.getImage(imageTag);
+    await image.inspect();
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export async function updateChallenge(formData: FormData) {
   // AUTHORIZATION: Only ADMIN and AUTHOR roles can edit challenges
@@ -17,6 +34,8 @@ export async function updateChallenge(formData: FormData) {
     const categoryId = formData.get('categoryId') as string;
     const title = formData.get('title') as string;
     const prompt = formData.get('prompt') as string;
+    const requiresTerminal = formData.get('requiresTerminal') === 'on';
+    const dockerImage = requiresTerminal ? (formData.get('dockerImage') as string) : null;
 
     // Basic validation
     if (!challengeId) {
@@ -29,6 +48,26 @@ export async function updateChallenge(formData: FormData) {
 
     if (!prompt || prompt.trim().length === 0) {
       throw new Error('Challenge prompt is required');
+    }
+
+    // Validate Docker image if terminal is required
+    if (requiresTerminal) {
+      if (!dockerImage) {
+        throw new Error('Docker image is required for terminal challenges');
+      }
+
+      // Check if image is in allowed list
+      if (!isValidDockerImage(dockerImage)) {
+        throw new Error('Selected Docker image is not in the allowed list');
+      }
+
+      // Check if image exists on server
+      const imageExists = await validateDockerImageExists(dockerImage);
+      if (!imageExists) {
+        throw new Error(
+          `Docker image "${dockerImage}" not found on server. Please build it first.`
+        );
+      }
     }
 
     // Get all questions data
@@ -55,6 +94,7 @@ export async function updateChallenge(formData: FormData) {
       data: {
         title: title.trim(),
         prompt: prompt.trim(),
+        dockerImage,
       },
     });
 
@@ -75,7 +115,6 @@ export async function updateChallenge(formData: FormData) {
 
     // Revalidate the challenge page
     revalidatePath(`/${categoryId}`);
-    
   } catch (error) {
     console.error('Error updating challenge:', error);
     throw error;
@@ -95,11 +134,16 @@ export async function updateChallenge(formData: FormData) {
   }
 }
 
-export async function deleteChallenge(challengeId: string): Promise<{ success: boolean; error?: string }> {
+export async function deleteChallenge(
+  challengeId: string
+): Promise<{ success: boolean; error?: string }> {
   // AUTHORIZATION: Only ADMIN and AUTHOR roles can delete challenges
   const hasPermission = await canCreateChallenges();
   if (!hasPermission) {
-    return { success: false, error: 'Unauthorized: You do not have permission to delete challenges' };
+    return {
+      success: false,
+      error: 'Unauthorized: You do not have permission to delete challenges',
+    };
   }
 
   const user = await getCurrentUser();
@@ -127,7 +171,10 @@ export async function deleteChallenge(challengeId: string): Promise<{ success: b
     const isAdmin = userRecord?.role === 'ADMIN';
 
     if (!isAuthor && !isAdmin) {
-      return { success: false, error: 'Only the challenge author or an admin can delete this challenge' };
+      return {
+        success: false,
+        error: 'Only the challenge author or an admin can delete this challenge',
+      };
     }
 
     // Delete the challenge (cascade will handle questions and files)
