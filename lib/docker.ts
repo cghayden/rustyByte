@@ -1,8 +1,15 @@
 // lib/docker.ts
 import Docker from 'dockerode';
 import crypto from 'crypto';
+import { PrismaClient } from '../generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
 const docker = new Docker();
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DIRECT_DATABASE_URL,
+});
+const prisma = new PrismaClient({ adapter });
 
 export interface ContainerInstance {
   id: string;
@@ -15,13 +22,13 @@ export interface ContainerInstance {
 export class DockerService {
   /**
    * SECURITY: Generate cryptographically secure authentication token
-   * 
+   *
    * Uses Node.js crypto.randomBytes to generate 32 random bytes (256 bits)
    * converted to 64 hexadecimal characters. This provides:
    * - Unpredictable tokens (2^256 possible combinations)
    * - Protection against brute force attacks
    * - Unique credentials per terminal session
-   * 
+   *
    * Each user's terminal gets its own token, preventing unauthorized access
    * to other users' containers even if they discover the port number.
    */
@@ -34,7 +41,7 @@ export class DockerService {
     const usedPorts = new Set<number>();
 
     // Get all running containers to check used ports
-    const containers = await docker.listContainers();
+    const containers = await docker.listContainers({ all: true });
     containers.forEach((container) => {
       if (container.Ports) {
         container.Ports.forEach((port) => {
@@ -42,6 +49,16 @@ export class DockerService {
             usedPorts.add(port.PublicPort);
           }
         });
+      }
+    });
+
+    // Also check database for ports assigned to instances (handles paused/stale containers)
+    const dbInstances = await prisma.instance.findMany({
+      select: { hostPort: true },
+    });
+    dbInstances.forEach((instance) => {
+      if (instance.hostPort) {
+        usedPorts.add(instance.hostPort);
       }
     });
 
@@ -99,21 +116,21 @@ export class DockerService {
 
       /**
        * SECURITY: Create container with multiple security layers
-       * 
+       *
        * 1. LOCALHOST-ONLY BINDING (HostIp: '127.0.0.1'):
        *    - Prevents external network access to terminal ports
        *    - Only accessible from the server itself, not from internet
        *    - Attackers can't directly connect even if they know the port
-       * 
+       *
        * 2. HTTP BASIC AUTH (--credential flag):
        *    - ttyd requires username:password for access
        *    - Credentials are the unique token generated above
        *    - Even localhost connections need valid credentials
-       * 
+       *
        * 3. RESOURCE LIMITS:
        *    - Memory: 512MB cap prevents container from consuming all RAM
        *    - CPU: Limited shares prevent DOS attacks
-       * 
+       *
        * Together these prevent:
        * - External attackers accessing terminals
        * - Users accessing each other's terminals
@@ -132,18 +149,10 @@ export class DockerService {
           Memory: 512 * 1024 * 1024, // 512MB limit
           CpuShares: 512, // CPU limit
         },
-        Env: [
-          `CTF_USER_ID=${userId}`,
-          `CTF_CHALLENGE=${challengeSlug}`,
-        ],
+        Env: [`CTF_USER_ID=${userId}`, `CTF_CHALLENGE=${challengeSlug}`],
         // ttyd command without authentication (already protected by localhost-only binding and app auth)
         // -W flag enables write access
-        Cmd: [
-          'ttyd',
-          '-p', '7681',
-          '-W',
-          'bash'
-        ],
+        Cmd: ['ttyd', '-p', '7681', '-W', 'bash'],
       });
 
       // Start the container
@@ -154,7 +163,7 @@ export class DockerService {
 
       /**
        * SECURITY: Return authentication token in HTTP Basic Auth format
-       * 
+       *
        * Format: "username:token" (e.g., "ctf:a3f9c8e2d1b4...")
        * This will be:
        * 1. Stored in database for session validation
@@ -175,24 +184,18 @@ export class DockerService {
   }
 
   // Get container status
-  async getInstanceStatus(
-    containerName: string
-  ): Promise<ContainerInstance | null> {
+  async getInstanceStatus(containerName: string): Promise<ContainerInstance | null> {
     try {
       const containers = await docker.listContainers({ all: true });
       const containerInfo = containers.find((c) =>
-        c.Names.some((name) =>
-          name.includes(containerName.replace('/ctf-', ''))
-        )
+        c.Names.some((name) => name.includes(containerName.replace('/ctf-', '')))
       );
 
       if (!containerInfo) {
         return null;
       }
 
-      const hostPort = containerInfo.Ports?.find(
-        (p) => p.PrivatePort === 7681
-      )?.PublicPort;
+      const hostPort = containerInfo.Ports?.find((p) => p.PrivatePort === 7681)?.PublicPort;
 
       return {
         id: containerInfo.Id,
@@ -279,14 +282,9 @@ export class DockerService {
           try {
             const container = docker.getContainer(containerInfo.Id);
             await container.remove();
-            console.log(
-              `Cleaned up expired container: ${containerInfo.Names[0]}`
-            );
+            console.log(`Cleaned up expired container: ${containerInfo.Names[0]}`);
           } catch (error) {
-            console.error(
-              `Error cleaning up container ${containerInfo.Names[0]}:`,
-              error
-            );
+            console.error(`Error cleaning up container ${containerInfo.Names[0]}:`, error);
           }
         }
       }
