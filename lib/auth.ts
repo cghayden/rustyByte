@@ -28,19 +28,14 @@ export async function hashPassword(password: string): Promise<string> {
 /**
  * Compare a plain text password with a hashed password
  */
-export async function comparePassword(
-  password: string,
-  hashedPassword: string
-): Promise<boolean> {
+export async function comparePassword(password: string, hashedPassword: string): Promise<boolean> {
   return bcrypt.compare(password, hashedPassword);
 }
 
 /**
  * Generate a JWT token for a user
  */
-export function generateToken(
-  payload: Omit<JWTPayload, 'iat' | 'exp'>
-): string {
+export function generateToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string {
   return jwt.sign(payload, JWT_SECRET, {
     expiresIn: '7d', // Token expires in 7 days
   });
@@ -104,7 +99,12 @@ export async function getCurrentUser(): Promise<JWTPayload | null> {
 /**
  * Get current user with full data from database (including role)
  */
-export async function getCurrentUserWithRole(): Promise<{ userId: string; email: string | null; username: string; role: string } | null> {
+export async function getCurrentUserWithRole(): Promise<{
+  userId: string;
+  email: string | null;
+  username: string;
+  role: string;
+} | null> {
   const user = await getCurrentUser();
   if (!user) {
     return null;
@@ -181,11 +181,14 @@ export async function verifyApiAuth(request: Request): Promise<JWTPayload | null
     }
 
     // Parse cookies manually
-    const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
-      const [key, value] = cookie.trim().split('=');
-      acc[key] = value;
-      return acc;
-    }, {} as Record<string, string>);
+    const cookies = cookieHeader.split(';').reduce(
+      (acc, cookie) => {
+        const [key, value] = cookie.trim().split('=');
+        acc[key] = value;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
 
     const token = cookies['auth-token'];
     if (!token) {
