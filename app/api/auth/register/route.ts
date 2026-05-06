@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
-import {
-  hashPassword,
-  validatePassword,
-  generateToken,
-  setAuthCookie,
-} from '@/lib/auth';
+import { hashPassword, validatePassword, generateToken, setAuthCookie } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,10 +9,7 @@ export async function POST(request: NextRequest) {
 
     // Validate input
     if (!username || !password) {
-      return NextResponse.json(
-        { error: 'Username and password are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Username and password are required' }, { status: 400 });
     }
 
     // Validate password strength
@@ -35,14 +27,12 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingUser) {
-      return NextResponse.json(
-        { error: 'Username is already taken' },
-        { status: 409 }
-      );
+      return NextResponse.json({ error: 'Username is already taken' }, { status: 409 });
     }
 
     // Hash password
     const hashedPassword = await hashPassword(password);
+    console.log('Hashed password:', hashedPassword);
 
     // Create user
     const user = await db.user.create({
@@ -82,9 +72,6 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error('Registration error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
