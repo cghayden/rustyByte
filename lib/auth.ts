@@ -143,7 +143,7 @@ export async function isAdmin(): Promise<boolean> {
  */
 export async function canCreateChallenges(): Promise<boolean> {
   const user = await getCurrentUserWithRole();
-  return user?.role === 'ADMIN' || user?.role === 'AUTHOR';
+  return user?.role === 'ADMIN' || user?.role === 'AUTHOR' || user?.role === 'BCC_CTFCLUB';
 }
 
 /**

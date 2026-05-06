@@ -12,7 +12,8 @@
 export const Role = {
   ADMIN: 'ADMIN',
   AUTHOR: 'AUTHOR',
-  PLAYER: 'PLAYER'
+  USER: 'USER',
+  BCC_CTFCLUB: 'BCC_CTFCLUB'
 } as const
 
 export type Role = (typeof Role)[keyof typeof Role]

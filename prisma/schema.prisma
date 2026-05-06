@@ -10,14 +10,15 @@ datasource db {
 enum Role {
   ADMIN
   AUTHOR
-  PLAYER
+  USER
+  BCC_CTFCLUB
 }
 
 model User {
   id         String      @id @default(cuid())
   email      String?     @unique
   username   String      @unique
-  role       Role        @default(PLAYER)
+  role       Role        @default(USER)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   password   String
