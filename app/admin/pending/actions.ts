@@ -26,9 +26,7 @@ export async function approveChallenge(formData: FormData) {
   }
 
   // Derive image tag deterministically from the challenge slug
-  const dockerImage = challenge.pendingDockerfilePath
-    ? `challenge-${challenge.slug}:latest`
-    : null;
+  const dockerImage = challenge.pendingDockerfilePath ? `challenge-${challenge.slug}:latest` : null;
 
   await db.challenge.update({
     where: { id: challengeId },
