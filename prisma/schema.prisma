@@ -10,14 +10,21 @@ datasource db {
 enum Role {
   ADMIN
   AUTHOR
-  PLAYER
+  USER
+  BCC_CTFCLUB
+}
+
+enum ChallengeStatus {
+  PENDING
+  ACTIVE
+  REJECTED
 }
 
 model User {
   id         String      @id @default(cuid())
   email      String?     @unique
   username   String      @unique
-  role       Role        @default(PLAYER)
+  role       Role        @default(USER)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   password   String
@@ -38,15 +45,20 @@ model Category {
 }
 
 model Challenge {
-  id          String          @id @default(cuid())
-  slug        String
-  title       String
-  prompt      String
-  categoryId  String
-  authorId    String          // ID of the user who created this challenge
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  dockerImage String?
+  id                     String          @id @default(cuid())
+  slug                   String
+  title                  String
+  prompt                 String
+  categoryId             String
+  authorId               String          // ID of the user who created this challenge
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+  dockerImage            String?
+  membersOnly            Boolean         @default(false)
+  status                 ChallengeStatus @default(PENDING)
+  pendingFileReview      Boolean         @default(false)
+  pendingDockerfilePath  String?         // S3 key: quarantine/{challengeId}/dockerfile
+  rejectionNote          String?         // Populated by admin on rejection
   files       ChallengeFile[]
   category    Category        @relation(fields: [categoryId], references: [id])
   author      User            @relation(fields: [authorId], references: [id])

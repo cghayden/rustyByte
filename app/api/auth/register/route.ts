@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import { hashPassword, validatePassword, generateToken, setAuthCookie } from '@/lib/auth';
+import { Role } from '../../../../generated/prisma/enums';
+
+const CLUB_INVITE_CODE = process.env.CLUB_INVITE_CODE;
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { username, password } = body;
+    const { username, password, inviteCode } = body;
 
     // Validate input
     if (!username || !password) {
@@ -32,13 +35,18 @@ export async function POST(request: NextRequest) {
 
     // Hash password
     const hashedPassword = await hashPassword(password);
-    console.log('Hashed password:', hashedPassword);
+    // Determine role based on invite code
+    const role =
+      inviteCode && CLUB_INVITE_CODE && inviteCode === CLUB_INVITE_CODE
+        ? Role.BCC_CTFCLUB
+        : Role.USER;
 
     // Create user
     const user = await db.user.create({
       data: {
         username,
         password: hashedPassword,
+        role,
       },
       select: {
         id: true,

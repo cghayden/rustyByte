@@ -1,49 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { DockerImageConfig } from '@/lib/dockerImages';
 
-interface TerminalToggleProps {
-  dockerImages: DockerImageConfig[];
-}
-
-export default function TerminalToggle({ dockerImages }: TerminalToggleProps) {
+export default function TerminalToggle() {
   const [requiresTerminal, setRequiresTerminal] = useState(false);
-  const [selectedImage, setSelectedImage] = useState('');
-  const [validationStatus, setValidationStatus] = useState<
-    'idle' | 'validating' | 'valid' | 'invalid'
-  >('idle');
-  const [validationError, setValidationError] = useState('');
-
-  const handleImageChange = async (imageTag: string) => {
-    setSelectedImage(imageTag);
-    setValidationStatus('idle');
-    setValidationError('');
-
-    if (!imageTag) return;
-
-    // Validate the image exists on the server
-    setValidationStatus('validating');
-    try {
-      const response = await fetch('/api/docker/validate-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageTag }),
-      });
-
-      const data = await response.json();
-
-      if (data.exists) {
-        setValidationStatus('valid');
-      } else {
-        setValidationStatus('invalid');
-        setValidationError(data.error || 'Image not found on server');
-      }
-    } catch (error) {
-      setValidationStatus('invalid');
-      setValidationError('Failed to validate image');
-    }
-  };
+  const [fileName, setFileName] = useState('');
 
   return (
     <div className="space-y-3">
@@ -56,11 +17,7 @@ export default function TerminalToggle({ dockerImages }: TerminalToggleProps) {
           checked={requiresTerminal}
           onChange={(e) => {
             setRequiresTerminal(e.target.checked);
-            if (!e.target.checked) {
-              setSelectedImage('');
-              setValidationStatus('idle');
-              setValidationError('');
-            }
+            if (!e.target.checked) setFileName('');
           }}
           className="w-4 h-4 text-stone-600 border-stone-800 rounded focus:ring-stone-500"
         />
@@ -69,45 +26,28 @@ export default function TerminalToggle({ dockerImages }: TerminalToggleProps) {
         </label>
       </div>
 
-      {/* Docker Image Selection (shown when terminal is required) */}
+      {/* Dockerfile upload (shown when terminal is required) */}
       {requiresTerminal && (
-        <div className="ml-7 space-y-2">
-          <label htmlFor="dockerImage" className="block text-sm font-medium text-gray-700">
-            Docker Image
+        <div className="ml-7 space-y-1">
+          <label htmlFor="dockerfileUpload" className="block text-sm font-medium text-gray-700">
+            Upload Dockerfile{' '}
+            <span className="font-normal text-gray-500">
+              (will be reviewed by an admin before going live)
+            </span>
           </label>
-          <select
-            id="dockerImage"
-            name="dockerImage"
+          <input
+            type="file"
+            id="dockerfileUpload"
+            name="dockerfileUpload"
             required={requiresTerminal}
-            value={selectedImage}
-            onChange={(e) => handleImageChange(e.target.value)}
-            className="w-full px-2 py-1.5 border border-stone-800 bg-amber-50 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-stone-900 focus:border-stone-900 text-stone-800 text-sm"
-          >
-            <option value="">Select a Docker image...</option>
-            {dockerImages.map((image) => (
-              <option key={image.tag} value={image.tag}>
-                {image.name}
-              </option>
-            ))}
-          </select>
-
-          {/* Image description */}
-          {selectedImage && (
-            <p className="text-xs text-gray-500">
-              {dockerImages.find((img) => img.tag === selectedImage)?.description}
-            </p>
-          )}
-
-          {/* Validation status */}
-          {validationStatus === 'validating' && (
-            <p className="text-xs text-blue-600">Validating image...</p>
-          )}
-          {validationStatus === 'valid' && (
-            <p className="text-xs text-green-600">✓ Image exists on server</p>
-          )}
-          {validationStatus === 'invalid' && (
-            <p className="text-xs text-red-600">✗ {validationError}</p>
-          )}
+            onChange={(e) => setFileName(e.target.files?.[0]?.name ?? '')}
+            className="w-full text-sm text-stone-700 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-stone-200 file:text-stone-700 hover:file:bg-stone-300 cursor-pointer"
+          />
+          {fileName && <p className="text-xs text-gray-500">Selected: {fileName}</p>}
+          <p className="text-xs text-amber-700">
+            Your challenge will remain <strong>pending</strong> until an admin reviews and approves
+            the Dockerfile.
+          </p>
         </div>
       )}
     </div>
