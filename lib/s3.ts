@@ -66,12 +66,31 @@ export function generateS3Key(
 
 // Allowed file extensions (fallback when MIME type is not recognized)
 const ALLOWED_EXTENSIONS = [
-  '.zip', '.rar', '.7z', '.gz', '.tar', '.tgz',
-  '.jpg', '.jpeg', '.png', '.gif', '.webp',
-  '.txt', '.pdf', '.json',
-  '.exe', '.elf', '.bin', '.so', '.dll',
-  '.pcap', '.pcapng', '.cap',
-  '.db', '.sqlite', '.sqlite3',
+  '.zip',
+  '.rar',
+  '.7z',
+  '.gz',
+  '.tar',
+  '.tgz',
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.gif',
+  '.webp',
+  '.txt',
+  '.pdf',
+  '.json',
+  '.exe',
+  '.elf',
+  '.bin',
+  '.so',
+  '.dll',
+  '.pcap',
+  '.pcapng',
+  '.cap',
+  '.db',
+  '.sqlite',
+  '.sqlite3',
 ] as const;
 
 // Validate file type and size
@@ -85,10 +104,10 @@ export function validateFile(file: File): { valid: boolean; error?: string } {
 
   // Check MIME type first
   const isMimeTypeAllowed = ALLOWED_FILE_TYPES.includes(file.type as AllowedFileType);
-  
+
   // If MIME type is not recognized, check file extension
   const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-  const isExtensionAllowed = ALLOWED_EXTENSIONS.some(ext => fileExtension === ext);
+  const isExtensionAllowed = ALLOWED_EXTENSIONS.some((ext) => fileExtension === ext);
 
   if (!isMimeTypeAllowed && !isExtensionAllowed) {
     return {
@@ -98,4 +117,34 @@ export function validateFile(file: File): { valid: boolean; error?: string } {
   }
 
   return { valid: true };
+}
+
+// Generate a signed URL for a quarantine S3 object (admin use only)
+import { GetObjectCommand, CopyObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+
+export async function getQuarantineSignedUrl(key: string): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: S3_BUCKET_NAME,
+    Key: key,
+  });
+  // 7-day expiry
+  return getSignedUrl(s3Client, command, { expiresIn: 60 * 60 * 24 * 7 });
+}
+
+// Move an S3 object from one key to another (copy then delete)
+export async function moveS3Object(sourceKey: string, destKey: string): Promise<void> {
+  await s3Client.send(
+    new CopyObjectCommand({
+      Bucket: S3_BUCKET_NAME,
+      CopySource: `${S3_BUCKET_NAME}/${sourceKey}`,
+      Key: destKey,
+    })
+  );
+  await s3Client.send(
+    new DeleteObjectCommand({
+      Bucket: S3_BUCKET_NAME,
+      Key: sourceKey,
+    })
+  );
 }

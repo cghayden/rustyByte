@@ -6,7 +6,6 @@ import { canCreateChallenges } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import SubmitButton from '@/components/SubmitButton';
 import TerminalToggle from '@/components/TerminalToggle';
-import { availableDockerImages } from '@/lib/dockerImages';
 
 export default async function CreateChallengePage() {
   // Check if user has permission to create challenges
@@ -60,7 +59,7 @@ export default async function CreateChallengePage() {
           {/* File Requirements Section */}
           <FileRequirements>
             {/* Terminal Option */}
-            <TerminalToggle dockerImages={availableDockerImages} />
+            <TerminalToggle />
 
             {/* Challenge Prompt */}
             <div>

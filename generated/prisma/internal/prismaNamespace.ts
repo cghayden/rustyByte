@@ -925,7 +925,11 @@ export const ChallengeScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   dockerImage: 'dockerImage',
-  membersOnly: 'membersOnly'
+  membersOnly: 'membersOnly',
+  status: 'status',
+  pendingFileReview: 'pendingFileReview',
+  pendingDockerfilePath: 'pendingDockerfilePath',
+  rejectionNote: 'rejectionNote'
 } as const
 
 export type ChallengeScalarFieldEnum = (typeof ChallengeScalarFieldEnum)[keyof typeof ChallengeScalarFieldEnum]
@@ -1052,6 +1056,20 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'ChallengeStatus'
+ */
+export type EnumChallengeStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChallengeStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ChallengeStatus[]'
+ */
+export type ListEnumChallengeStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChallengeStatus[]'>
     
 
 

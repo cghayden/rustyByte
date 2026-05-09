@@ -6,6 +6,8 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { canCreateChallenges, getCurrentUser } from '@/lib/auth';
 import { isValidDockerImage } from '@/lib/dockerImages';
+import { s3Client, S3_BUCKET_NAME } from '@/lib/s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import Docker from 'dockerode';
 
 const docker = new Docker({ socketPath: '/var/run/docker.sock' });
@@ -43,7 +45,11 @@ export async function createChallenge(formData: FormData) {
     const requiresFiles = formData.get('requiresFiles') === 'on';
     const requiresTerminal = formData.get('requiresTerminal') === 'on';
     const membersOnly = formData.get('membersOnly') === 'on';
-    const dockerImage = requiresTerminal ? (formData.get('dockerImage') as string) : null;
+    const dockerfileUpload = requiresTerminal
+      ? (formData.get('dockerfileUpload') as File | null)
+      : null;
+    // dockerImage is not assigned at creation time — set by admin on approval
+    const dockerImage = null;
 
     // Basic validation
     if (!title || title.trim().length === 0) {
@@ -59,23 +65,8 @@ export async function createChallenge(formData: FormData) {
     }
 
     // Validate Docker image if terminal is required
-    if (requiresTerminal) {
-      if (!dockerImage) {
-        throw new Error('Docker image is required for terminal challenges');
-      }
-
-      // Check if image is in allowed list
-      if (!isValidDockerImage(dockerImage)) {
-        throw new Error('Selected Docker image is not in the allowed list');
-      }
-
-      // Check if image exists on server
-      const imageExists = await validateDockerImageExists(dockerImage);
-      if (!imageExists) {
-        throw new Error(
-          `Docker image "${dockerImage}" not found on server. Please build it first.`
-        );
-      }
+    if (requiresTerminal && !dockerfileUpload) {
+      throw new Error('A Dockerfile is required for terminal challenges');
     }
 
     // Check if title already exists
@@ -143,8 +134,13 @@ export async function createChallenge(formData: FormData) {
       throw new Error('At least one question is required');
     }
 
-    // Create the challenge with all its questions
-    const _challenge = await prisma.challenge.create({
+    // Determine initial status:
+    // Goes ACTIVE immediately only if no files and no dockerfile needed
+    const needsReview = requiresFiles || !!dockerfileUpload;
+    const initialStatus = needsReview ? 'PENDING' : 'ACTIVE';
+
+    // Create the challenge
+    const challenge = await prisma.challenge.create({
       data: {
         categoryId,
         authorId: user.userId,
@@ -153,21 +149,47 @@ export async function createChallenge(formData: FormData) {
         prompt: prompt.trim(),
         dockerImage,
         membersOnly,
+        status: initialStatus,
+        pendingFileReview: needsReview,
         questions: {
           create: questions,
         },
       },
     });
 
+    // Upload dockerfile to quarantine if provided
+    if (dockerfileUpload && dockerfileUpload.size > 0) {
+      const key = `quarantine/${challenge.id}/dockerfile`;
+      const buffer = Buffer.from(await dockerfileUpload.arrayBuffer());
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: S3_BUCKET_NAME,
+          Key: key,
+          Body: buffer,
+          ContentType: 'text/plain',
+          Metadata: {
+            challengeId: challenge.id,
+            uploadedBy: user.userId,
+          },
+        })
+      );
+      await prisma.challenge.update({
+        where: { id: challenge.id },
+        data: { pendingDockerfilePath: key },
+      });
+    }
+
     // Revalidate the category page to show the new challenge
     revalidatePath(`/${categoryId}`);
 
-    // Redirect based on whether files are required
-    if (requiresFiles) {
-      // Redirect to edit page for file uploads
+    // Redirect based on status and file requirements
+    if (initialStatus === 'ACTIVE') {
+      redirect(`/${categoryId}/${slug}`);
+    } else if (requiresFiles) {
+      // Go to edit page so author can upload challenge files
       redirect(`/${categoryId}/${slug}/edit`);
     } else {
-      // Redirect to the completed challenge page
+      // Dockerfile-only pending — show the challenge page (will show pending state)
       redirect(`/${categoryId}/${slug}`);
     }
   } catch (error) {

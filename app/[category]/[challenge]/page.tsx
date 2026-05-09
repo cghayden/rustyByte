@@ -20,6 +20,40 @@ export default async function ChallengePage({
 
   if (!categoryData || !challengeData) return notFound();
 
+  const isAdmin = currentUser?.role === 'ADMIN';
+  const isAuthor = currentUser?.userId === challengeData.authorId;
+
+  // Non-ACTIVE challenges: admins see everything, authors see their own pending/rejected
+  if (challengeData.status !== 'ACTIVE') {
+    if (!isAdmin && !isAuthor) return notFound();
+
+    // Show pending/rejected status page to author (and admin)
+    return (
+      <div className="space-y-4 max-w-200">
+        <h1 className="text-xl font-semibold text-neutral-300">{challengeData.title}</h1>
+        {challengeData.status === 'PENDING' && (
+          <div className="p-4 rounded-lg bg-yellow-900/30 border border-yellow-600/40 text-yellow-300">
+            <p className="font-semibold">Awaiting admin review</p>
+            <p className="text-sm mt-1 text-yellow-400/80">
+              This challenge is pending approval. It will become visible to other users once an
+              admin activates it.
+            </p>
+          </div>
+        )}
+        {challengeData.status === 'REJECTED' && (
+          <div className="p-4 rounded-lg bg-red-900/30 border border-red-600/40 text-red-300">
+            <p className="font-semibold">Challenge rejected</p>
+            {challengeData.rejectionNote && (
+              <p className="text-sm mt-1 text-red-400/80">
+                <span className="font-medium">Reason:</span> {challengeData.rejectionNote}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   // Guard members-only challenges
   if (challengeData.membersOnly) {
     const role = currentUser?.role;

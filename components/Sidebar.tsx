@@ -12,9 +12,12 @@ export default async function Sidebar({ categoryId }: SidebarProps) {
 
   const canSeeMembersOnly = currentUser?.role === 'ADMIN' || currentUser?.role === 'BCC_CTFCLUB';
 
-  // Fetch challenges, hiding members-only ones from regular users
+  // Fetch challenges, hiding members-only ones from regular users and always hiding non-ACTIVE
   const challenges = await db.challenge.findMany({
-    where: canSeeMembersOnly ? undefined : { membersOnly: false },
+    where: {
+      status: 'ACTIVE',
+      ...(canSeeMembersOnly ? {} : { membersOnly: false }),
+    },
     select: {
       id: true,
       slug: true,
