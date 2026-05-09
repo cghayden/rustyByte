@@ -107,7 +107,8 @@ export const ChallengeScalarFieldEnum = {
   authorId: 'authorId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  dockerImage: 'dockerImage'
+  dockerImage: 'dockerImage',
+  membersOnly: 'membersOnly'
 } as const
 
 export type ChallengeScalarFieldEnum = (typeof ChallengeScalarFieldEnum)[keyof typeof ChallengeScalarFieldEnum]

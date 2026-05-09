@@ -34,6 +34,7 @@ export type ChallengeMinAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   dockerImage: string | null
+  membersOnly: boolean | null
 }
 
 export type ChallengeMaxAggregateOutputType = {
@@ -46,6 +47,7 @@ export type ChallengeMaxAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   dockerImage: string | null
+  membersOnly: boolean | null
 }
 
 export type ChallengeCountAggregateOutputType = {
@@ -58,6 +60,7 @@ export type ChallengeCountAggregateOutputType = {
   createdAt: number
   updatedAt: number
   dockerImage: number
+  membersOnly: number
   _all: number
 }
 
@@ -72,6 +75,7 @@ export type ChallengeMinAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   dockerImage?: true
+  membersOnly?: true
 }
 
 export type ChallengeMaxAggregateInputType = {
@@ -84,6 +88,7 @@ export type ChallengeMaxAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   dockerImage?: true
+  membersOnly?: true
 }
 
 export type ChallengeCountAggregateInputType = {
@@ -96,6 +101,7 @@ export type ChallengeCountAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   dockerImage?: true
+  membersOnly?: true
   _all?: true
 }
 
@@ -181,6 +187,7 @@ export type ChallengeGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   dockerImage: string | null
+  membersOnly: boolean
   _count: ChallengeCountAggregateOutputType | null
   _min: ChallengeMinAggregateOutputType | null
   _max: ChallengeMaxAggregateOutputType | null
@@ -214,6 +221,7 @@ export type ChallengeWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
   dockerImage?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  membersOnly?: Prisma.BoolFilter<"Challenge"> | boolean
   files?: Prisma.ChallengeFileListRelationFilter
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -231,6 +239,7 @@ export type ChallengeOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   dockerImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  membersOnly?: Prisma.SortOrder
   files?: Prisma.ChallengeFileOrderByRelationAggregateInput
   category?: Prisma.CategoryOrderByWithRelationInput
   author?: Prisma.UserOrderByWithRelationInput
@@ -252,6 +261,7 @@ export type ChallengeWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
   dockerImage?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  membersOnly?: Prisma.BoolFilter<"Challenge"> | boolean
   files?: Prisma.ChallengeFileListRelationFilter
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
   author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -269,6 +279,7 @@ export type ChallengeOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   dockerImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  membersOnly?: Prisma.SortOrder
   _count?: Prisma.ChallengeCountOrderByAggregateInput
   _max?: Prisma.ChallengeMaxOrderByAggregateInput
   _min?: Prisma.ChallengeMinOrderByAggregateInput
@@ -287,6 +298,7 @@ export type ChallengeScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Challenge"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Challenge"> | Date | string
   dockerImage?: Prisma.StringNullableWithAggregatesFilter<"Challenge"> | string | null
+  membersOnly?: Prisma.BoolWithAggregatesFilter<"Challenge"> | boolean
 }
 
 export type ChallengeCreateInput = {
@@ -297,6 +309,7 @@ export type ChallengeCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
+  membersOnly?: boolean
   files?: Prisma.ChallengeFileCreateNestedManyWithoutChallengeInput
   category: Prisma.CategoryCreateNestedOneWithoutChallengesInput
   author: Prisma.UserCreateNestedOneWithoutChallengesInput
@@ -314,6 +327,7 @@ export type ChallengeUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
+  membersOnly?: boolean
   files?: Prisma.ChallengeFileUncheckedCreateNestedManyWithoutChallengeInput
   questions?: Prisma.QuestionUncheckedCreateNestedManyWithoutChallengeInput
   instances?: Prisma.InstanceUncheckedCreateNestedManyWithoutChallengeInput
@@ -327,6 +341,7 @@ export type ChallengeUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   files?: Prisma.ChallengeFileUpdateManyWithoutChallengeNestedInput
   category?: Prisma.CategoryUpdateOneRequiredWithoutChallengesNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutChallengesNestedInput
@@ -344,6 +359,7 @@ export type ChallengeUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   files?: Prisma.ChallengeFileUncheckedUpdateManyWithoutChallengeNestedInput
   questions?: Prisma.QuestionUncheckedUpdateManyWithoutChallengeNestedInput
   instances?: Prisma.InstanceUncheckedUpdateManyWithoutChallengeNestedInput
@@ -359,6 +375,7 @@ export type ChallengeCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
+  membersOnly?: boolean
 }
 
 export type ChallengeUpdateManyMutationInput = {
@@ -369,6 +386,7 @@ export type ChallengeUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ChallengeUncheckedUpdateManyInput = {
@@ -381,6 +399,7 @@ export type ChallengeUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ChallengeListRelationFilter = {
@@ -408,6 +427,7 @@ export type ChallengeCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   dockerImage?: Prisma.SortOrder
+  membersOnly?: Prisma.SortOrder
 }
 
 export type ChallengeMaxOrderByAggregateInput = {
@@ -420,6 +440,7 @@ export type ChallengeMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   dockerImage?: Prisma.SortOrder
+  membersOnly?: Prisma.SortOrder
 }
 
 export type ChallengeMinOrderByAggregateInput = {
@@ -432,6 +453,7 @@ export type ChallengeMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   dockerImage?: Prisma.SortOrder
+  membersOnly?: Prisma.SortOrder
 }
 
 export type ChallengeScalarRelationFilter = {
@@ -523,6 +545,10 @@ export type ChallengeUncheckedUpdateManyWithoutCategoryNestedInput = {
   deleteMany?: Prisma.ChallengeScalarWhereInput | Prisma.ChallengeScalarWhereInput[]
 }
 
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
 export type ChallengeCreateNestedOneWithoutQuestionsInput = {
   create?: Prisma.XOR<Prisma.ChallengeCreateWithoutQuestionsInput, Prisma.ChallengeUncheckedCreateWithoutQuestionsInput>
   connectOrCreate?: Prisma.ChallengeCreateOrConnectWithoutQuestionsInput
@@ -573,6 +599,7 @@ export type ChallengeCreateWithoutAuthorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
+  membersOnly?: boolean
   files?: Prisma.ChallengeFileCreateNestedManyWithoutChallengeInput
   category: Prisma.CategoryCreateNestedOneWithoutChallengesInput
   questions?: Prisma.QuestionCreateNestedManyWithoutChallengeInput
@@ -588,6 +615,7 @@ export type ChallengeUncheckedCreateWithoutAuthorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
+  membersOnly?: boolean
   files?: Prisma.ChallengeFileUncheckedCreateNestedManyWithoutChallengeInput
   questions?: Prisma.QuestionUncheckedCreateNestedManyWithoutChallengeInput
   instances?: Prisma.InstanceUncheckedCreateNestedManyWithoutChallengeInput
@@ -632,6 +660,7 @@ export type ChallengeScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Challenge"> | Date | string
   dockerImage?: Prisma.StringNullableFilter<"Challenge"> | string | null
+  membersOnly?: Prisma.BoolFilter<"Challenge"> | boolean
 }
 
 export type ChallengeCreateWithoutCategoryInput = {
@@ -642,6 +671,7 @@ export type ChallengeCreateWithoutCategoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
+  membersOnly?: boolean
   files?: Prisma.ChallengeFileCreateNestedManyWithoutChallengeInput
   author: Prisma.UserCreateNestedOneWithoutChallengesInput
   questions?: Prisma.QuestionCreateNestedManyWithoutChallengeInput
@@ -657,6 +687,7 @@ export type ChallengeUncheckedCreateWithoutCategoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
+  membersOnly?: boolean
   files?: Prisma.ChallengeFileUncheckedCreateNestedManyWithoutChallengeInput
   questions?: Prisma.QuestionUncheckedCreateNestedManyWithoutChallengeInput
   instances?: Prisma.InstanceUncheckedCreateNestedManyWithoutChallengeInput
@@ -696,6 +727,7 @@ export type ChallengeCreateWithoutQuestionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
+  membersOnly?: boolean
   files?: Prisma.ChallengeFileCreateNestedManyWithoutChallengeInput
   category: Prisma.CategoryCreateNestedOneWithoutChallengesInput
   author: Prisma.UserCreateNestedOneWithoutChallengesInput
@@ -712,6 +744,7 @@ export type ChallengeUncheckedCreateWithoutQuestionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
+  membersOnly?: boolean
   files?: Prisma.ChallengeFileUncheckedCreateNestedManyWithoutChallengeInput
   instances?: Prisma.InstanceUncheckedCreateNestedManyWithoutChallengeInput
 }
@@ -740,6 +773,7 @@ export type ChallengeUpdateWithoutQuestionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   files?: Prisma.ChallengeFileUpdateManyWithoutChallengeNestedInput
   category?: Prisma.CategoryUpdateOneRequiredWithoutChallengesNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutChallengesNestedInput
@@ -756,6 +790,7 @@ export type ChallengeUncheckedUpdateWithoutQuestionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   files?: Prisma.ChallengeFileUncheckedUpdateManyWithoutChallengeNestedInput
   instances?: Prisma.InstanceUncheckedUpdateManyWithoutChallengeNestedInput
 }
@@ -768,6 +803,7 @@ export type ChallengeCreateWithoutFilesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
+  membersOnly?: boolean
   category: Prisma.CategoryCreateNestedOneWithoutChallengesInput
   author: Prisma.UserCreateNestedOneWithoutChallengesInput
   questions?: Prisma.QuestionCreateNestedManyWithoutChallengeInput
@@ -784,6 +820,7 @@ export type ChallengeUncheckedCreateWithoutFilesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
+  membersOnly?: boolean
   questions?: Prisma.QuestionUncheckedCreateNestedManyWithoutChallengeInput
   instances?: Prisma.InstanceUncheckedCreateNestedManyWithoutChallengeInput
 }
@@ -812,6 +849,7 @@ export type ChallengeUpdateWithoutFilesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   category?: Prisma.CategoryUpdateOneRequiredWithoutChallengesNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutChallengesNestedInput
   questions?: Prisma.QuestionUpdateManyWithoutChallengeNestedInput
@@ -828,6 +866,7 @@ export type ChallengeUncheckedUpdateWithoutFilesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   questions?: Prisma.QuestionUncheckedUpdateManyWithoutChallengeNestedInput
   instances?: Prisma.InstanceUncheckedUpdateManyWithoutChallengeNestedInput
 }
@@ -840,6 +879,7 @@ export type ChallengeCreateWithoutInstancesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
+  membersOnly?: boolean
   files?: Prisma.ChallengeFileCreateNestedManyWithoutChallengeInput
   category: Prisma.CategoryCreateNestedOneWithoutChallengesInput
   author: Prisma.UserCreateNestedOneWithoutChallengesInput
@@ -856,6 +896,7 @@ export type ChallengeUncheckedCreateWithoutInstancesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
+  membersOnly?: boolean
   files?: Prisma.ChallengeFileUncheckedCreateNestedManyWithoutChallengeInput
   questions?: Prisma.QuestionUncheckedCreateNestedManyWithoutChallengeInput
 }
@@ -884,6 +925,7 @@ export type ChallengeUpdateWithoutInstancesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   files?: Prisma.ChallengeFileUpdateManyWithoutChallengeNestedInput
   category?: Prisma.CategoryUpdateOneRequiredWithoutChallengesNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutChallengesNestedInput
@@ -900,6 +942,7 @@ export type ChallengeUncheckedUpdateWithoutInstancesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   files?: Prisma.ChallengeFileUncheckedUpdateManyWithoutChallengeNestedInput
   questions?: Prisma.QuestionUncheckedUpdateManyWithoutChallengeNestedInput
 }
@@ -913,6 +956,7 @@ export type ChallengeCreateManyAuthorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
+  membersOnly?: boolean
 }
 
 export type ChallengeUpdateWithoutAuthorInput = {
@@ -923,6 +967,7 @@ export type ChallengeUpdateWithoutAuthorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   files?: Prisma.ChallengeFileUpdateManyWithoutChallengeNestedInput
   category?: Prisma.CategoryUpdateOneRequiredWithoutChallengesNestedInput
   questions?: Prisma.QuestionUpdateManyWithoutChallengeNestedInput
@@ -938,6 +983,7 @@ export type ChallengeUncheckedUpdateWithoutAuthorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   files?: Prisma.ChallengeFileUncheckedUpdateManyWithoutChallengeNestedInput
   questions?: Prisma.QuestionUncheckedUpdateManyWithoutChallengeNestedInput
   instances?: Prisma.InstanceUncheckedUpdateManyWithoutChallengeNestedInput
@@ -952,6 +998,7 @@ export type ChallengeUncheckedUpdateManyWithoutAuthorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ChallengeCreateManyCategoryInput = {
@@ -963,6 +1010,7 @@ export type ChallengeCreateManyCategoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   dockerImage?: string | null
+  membersOnly?: boolean
 }
 
 export type ChallengeUpdateWithoutCategoryInput = {
@@ -973,6 +1021,7 @@ export type ChallengeUpdateWithoutCategoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   files?: Prisma.ChallengeFileUpdateManyWithoutChallengeNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutChallengesNestedInput
   questions?: Prisma.QuestionUpdateManyWithoutChallengeNestedInput
@@ -988,6 +1037,7 @@ export type ChallengeUncheckedUpdateWithoutCategoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
   files?: Prisma.ChallengeFileUncheckedUpdateManyWithoutChallengeNestedInput
   questions?: Prisma.QuestionUncheckedUpdateManyWithoutChallengeNestedInput
   instances?: Prisma.InstanceUncheckedUpdateManyWithoutChallengeNestedInput
@@ -1002,6 +1052,7 @@ export type ChallengeUncheckedUpdateManyWithoutCategoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dockerImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  membersOnly?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -1063,6 +1114,7 @@ export type ChallengeSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   createdAt?: boolean
   updatedAt?: boolean
   dockerImage?: boolean
+  membersOnly?: boolean
   files?: boolean | Prisma.Challenge$filesArgs<ExtArgs>
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1081,6 +1133,7 @@ export type ChallengeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   createdAt?: boolean
   updatedAt?: boolean
   dockerImage?: boolean
+  membersOnly?: boolean
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["challenge"]>
@@ -1095,6 +1148,7 @@ export type ChallengeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   createdAt?: boolean
   updatedAt?: boolean
   dockerImage?: boolean
+  membersOnly?: boolean
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["challenge"]>
@@ -1109,9 +1163,10 @@ export type ChallengeSelectScalar = {
   createdAt?: boolean
   updatedAt?: boolean
   dockerImage?: boolean
+  membersOnly?: boolean
 }
 
-export type ChallengeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "prompt" | "categoryId" | "authorId" | "createdAt" | "updatedAt" | "dockerImage", ExtArgs["result"]["challenge"]>
+export type ChallengeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "prompt" | "categoryId" | "authorId" | "createdAt" | "updatedAt" | "dockerImage" | "membersOnly", ExtArgs["result"]["challenge"]>
 export type ChallengeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   files?: boolean | Prisma.Challenge$filesArgs<ExtArgs>
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
@@ -1148,6 +1203,7 @@ export type $ChallengePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     createdAt: Date
     updatedAt: Date
     dockerImage: string | null
+    membersOnly: boolean
   }, ExtArgs["result"]["challenge"]>
   composites: {}
 }
@@ -1585,6 +1641,7 @@ export interface ChallengeFieldRefs {
   readonly createdAt: Prisma.FieldRef<"Challenge", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Challenge", 'DateTime'>
   readonly dockerImage: Prisma.FieldRef<"Challenge", 'String'>
+  readonly membersOnly: Prisma.FieldRef<"Challenge", 'Boolean'>
 }
     
 

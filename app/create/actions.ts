@@ -42,6 +42,7 @@ export async function createChallenge(formData: FormData) {
     const prompt = formData.get('prompt') as string;
     const requiresFiles = formData.get('requiresFiles') === 'on';
     const requiresTerminal = formData.get('requiresTerminal') === 'on';
+    const membersOnly = formData.get('membersOnly') === 'on';
     const dockerImage = requiresTerminal ? (formData.get('dockerImage') as string) : null;
 
     // Basic validation
@@ -151,6 +152,7 @@ export async function createChallenge(formData: FormData) {
         slug,
         prompt: prompt.trim(),
         dockerImage,
+        membersOnly,
         questions: {
           create: questions,
         },

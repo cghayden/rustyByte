@@ -48,6 +48,7 @@ model Challenge {
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
   dockerImage String?
+  membersOnly Boolean         @default(false)
   files       ChallengeFile[]
   category    Category        @relation(fields: [categoryId], references: [id])
   author      User            @relation(fields: [authorId], references: [id])

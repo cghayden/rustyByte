@@ -80,6 +80,25 @@ export default async function CreateChallengePage() {
           {/* Multiple Questions */}
           <MultipleQuestionsInput />
 
+          {/* Members Only */}
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="membersOnly"
+              name="membersOnly"
+              className="w-4 h-4 accent-stone-700 cursor-pointer"
+            />
+            <label
+              htmlFor="membersOnly"
+              className="text-sm font-medium text-gray-700 cursor-pointer select-none"
+            >
+              Members only{' '}
+              <span className="text-gray-500 font-normal">
+                (BCC CTF Club members and admins only)
+              </span>
+            </label>
+          </div>
+
           {/* Submit Button */}
           <div className="flex gap-3 pt-2">
             <SubmitButton
