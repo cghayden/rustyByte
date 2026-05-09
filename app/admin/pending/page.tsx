@@ -116,11 +116,16 @@ export default async function AdminPendingPage() {
             <input type="hidden" name="challengeId" value={challenge.id} />
 
             {challenge.pendingDockerfilePath && (
-              <p className="text-xs text-neutral-400">
-                Image will be tagged{' '}
-                <code className="text-accent">challenge-{challenge.slug}:latest</code>
-                {' '}— run the build script on the server after approving.
-              </p>
+              <div className="text-xs text-neutral-400 space-y-1">
+                <p>
+                  Image will be tagged{' '}
+                  <code className="text-accent">challenge-{challenge.slug}:latest</code>. After
+                  approving, SSH to the server and run:
+                </p>
+                <code className="block bg-stone-900 text-neutral-200 px-3 py-2 rounded select-all">
+                  npx tsx scripts/build-challenge-image.ts --challengeId={challenge.id}
+                </code>
+              </div>
             )}
 
             <SubmitButton className="px-4 py-2 bg-green-700 hover:bg-green-600 text-white text-sm font-medium rounded focus:outline-none focus:ring-2 focus:ring-green-500">

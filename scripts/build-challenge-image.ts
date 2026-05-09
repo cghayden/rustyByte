@@ -61,7 +61,9 @@ async function main() {
   }
 
   if (challenge.status !== 'ACTIVE') {
-    console.error(`Challenge "${challenge.title}" is not ACTIVE (status: ${challenge.status}). Approve it first.`);
+    console.error(
+      `Challenge "${challenge.title}" is not ACTIVE (status: ${challenge.status}). Approve it first.`
+    );
     process.exit(1);
   }
 

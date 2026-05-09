@@ -1,18 +1,24 @@
 /**
  * Docker Images Configuration
  *
- * Naming Convention:
- * - Dockerfile: dockerfiles/Dockerfile.<image-name>
- * - Image tag: <image-name>:latest
+ * This file is no longer used for challenge-specific Docker images.
+ * Challenge images are now automatically tagged from the challenge slug:
+ *   challenge-<slug>:latest
  *
- * Example:
- * - Dockerfile: dockerfiles/Dockerfile.linux-basic
- * - Image: linux-basic:latest
+ * When an ADMIN approves a challenge Dockerfile at /admin/pending, the tag
+ * is assigned automatically. To build the image on the server, SSH in and run:
+ *   npx tsx scripts/build-challenge-image.ts --challengeId=<id>
  *
- * To add a new image:
- * 1. Create the Dockerfile in /dockerfiles/Dockerfile.<name>
- * 2. Add an entry to this array
- * 3. Build on the server: docker build -f dockerfiles/Dockerfile.<name> -t <name>:latest .
+ * The script will:
+ *   1. Download the approved Dockerfile from S3
+ *   2. Build the image tagged as challenge-<slug>:latest
+ *   3. Clean up the temp file
+ *
+ * ---
+ *
+ * The array below is for any shared/base images that are NOT tied to a specific
+ * challenge (e.g., a generic Linux sandbox). These are built manually:
+ *   docker build -f dockerfiles/Dockerfile.<name> -t <name>:latest .
  */
 
 export interface DockerImageConfig {

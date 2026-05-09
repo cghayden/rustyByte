@@ -63,7 +63,7 @@ export class DockerService {
     });
 
     // Find an available port starting from 8000
-    for (let port = 8000; port <= 9000; port++) {
+    for (let port = 8000; port <= 8099; port++) {
       if (!usedPorts.has(port)) {
         return port;
       }
